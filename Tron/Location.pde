@@ -32,7 +32,7 @@ class Location {
     this.c = c; 
   }
   
-  void getColor() {
+  color getColor() {
     return this.c;
   }
   
