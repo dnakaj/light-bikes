@@ -36,6 +36,10 @@ class Location {
     return this.c;
   }
   
+  void setType(LocationType type) {
+    this.type = type; 
+  }
+  
   LocationType getType() {
     return this.type;
   }

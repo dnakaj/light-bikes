@@ -1,27 +1,44 @@
   ArrayList<Player> players = new ArrayList();
   ArrayList<Location> grid = new ArrayList();
-  final int w = 500;
-  final int h = 500;
-  final int topHeight = 100;
+  int w = 0;
+  int h = 0;
+  final int topHeight = 50;
+  final int pixelSize = 5;
   Tron game;
   //Screen screen; // Start, Pick Color, game screen
  
  // Grid dimensions NOT dimensions of entire screen 
   int getWidth() { return w; }
   int getHeight() { return h-topHeight; }
+  int getPixelSize() { return pixelSize; }
+  
   
   void setup() {
-    size(500,500);
-    for (int r=topHeight; r<h; r++) {
-      for (int c=0; c<w; c++) {
-        grid.add(new Location(c, r));
+    size(600,600);
+    w = width;
+    h = height;
+    if (width % pixelSize != 0 || height % pixelSize != 0) {
+      throw new IllegalArgumentException();
+    }
+    boolean row = true;
+    boolean black = true;
+    for (int r=topHeight; r<h; r+=pixelSize) {
+      for (int c=0; c<w; c+=pixelSize) {  
+        if (black) {
+            black = false;
+            grid.add(new Location(c, r, color(255,255,255), LocationType.AIR));
+        } else {
+          grid.add(new Location(c, r, color(0,0,0), LocationType.AIR)); 
+          black = true;
+        }
       }
+      black ^= true;
     }
     
     game = this;
     
     players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd', this.game));
-    //players.add(new Player("Player 2", color(200,200,200), 'i', 'j', 'k', 'l', this.game));
+    players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l', this.game));
   }
   
   ArrayList<Location> getGrid() {
@@ -50,13 +67,17 @@
       stroke(c);
       fill(c);
       
-      rect(loc.getX(), loc.getY(), 1, 1);
+      rect(loc.getX(), loc.getY(), pixelSize, pixelSize);
     }
   }
   
+  // Error: why doesnt it always log my key press?
   void keyPressed() {
     for (Player player : players) {
+      System.out.println("iterating players...");
       if (player.getKeys().contains(key)) {
+     
+        System.out.println("key pressed...");
         player.changeDirection(key);
       }
     }
@@ -74,4 +95,4 @@
     //rect(300,200,2,2);
     
     //grid.draw();
-  }
+}

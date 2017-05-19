@@ -10,8 +10,10 @@ class Player
   private ArrayList<Location> playerLocations;
   private ArrayList<Character> keyList;
   private char direction;
-  private int change;
+  private int speed;
   private Tron game;
+  private boolean alive;
+  int lives = 3;
 
   public Player (String n, color c, char u, char l, char d, char r, Tron g)
   {
@@ -25,9 +27,9 @@ class Player
     DOWN = d;
     LEFT = l;
     RIGHT = r;
-    direction = UP;
-    change = 1;
+    speed = 1;
     game = g;
+    alive = true;
     
     keyList = new ArrayList();
     
@@ -36,13 +38,17 @@ class Player
     keyList.add(LEFT);
     keyList.add(RIGHT);
     
+    direction = keyList.get((int) random(keyList.size()));
+    
     playerLocations = new ArrayList<Location>();
     
     int w = g.getWidth();
     int h = g.getHeight();
     
-    int x = (int) random(w);
-    int y = (int) random (h);
+    int x = ((int) random(w/5)) * 5;
+    int y = ((int) random (h/5)) * 5;
+    
+    System.out.println(x+" : "+y);
     
     playerLocations.add(new Location(x,y, c, LocationType.PLAYER));
   }
@@ -53,64 +59,82 @@ class Player
 
   public void move ()
   {
+    if (!alive) { return; }
     
-    Location last = playerLocations.get(playerLocations.size()-1);
+    Location last = playerLocations.get(playerLocations.size()-1); //<>//
     Location next = null;
 
     if (direction == UP)
     {
-      next = game.getLocation(last.getX(), last.getY() - change);
+      next = game.getLocation(last.getX(), last.getY() - speed * game.getPixelSize());
     }
 
     else if (direction == DOWN)
     {
-      next = game.getLocation(last.getX(), last.getY() + change);
+      next = game.getLocation(last.getX(), last.getY() + speed * game.getPixelSize());
     }
 
     else if (direction == LEFT)
     {
-      next = game.getLocation(last.getX() - change, last.getY());
+      next = game.getLocation(last.getX() - speed * game.getPixelSize(), last.getY());
     }
 
     else if (direction == RIGHT)
     {
-      next = game.getLocation(last.getX() + change, last.getY());
+      next = game.getLocation(last.getX() + speed * game.getPixelSize(), last.getY());
     }
 
     if (checkCrash (next))
     {
       // Game over
       System.out.println("GAME OVER!");
+      this.lives --;
+      this.alive = false;
     
-      playerLocations.add (next);
     } else {
-      //fill(this.col);
-      //rect(300,300,1,1);
-      next.setColor(this.col);  //<>//
+      next.setType(LocationType.PLAYER);
+      playerLocations.add(next);
+      next.setColor(this.col); 
     }
+  }
+  
+  int lives() {
+    return this.lives; 
+  }
+  
+  void respawn() {
+    this.alive = true; 
   }
 
   // Changed int direction to char direction
   public void changeDirection (char dir)
   {
-    System.out.println("Direction changed!");
-    if (dir == UP || dir == DOWN || dir == RIGHT || dir == LEFT)
+    if ((dir == UP || dir == DOWN || dir == RIGHT || dir == LEFT) && validMove(dir))
     {
       direction = dir;
     }
+  }
+
+  private boolean validMove(char dir) {
+    return !(dir == UP && direction == DOWN || dir == DOWN && direction == UP || dir == LEFT && direction == RIGHT || dir == RIGHT && direction == LEFT); 
   }
 
   String name() {
     return this.name;
   }
 
+  ArrayList<Location> locations() {
+    return this.playerLocations; 
+  }
+
   private boolean checkCrash (Location next)
   {
     if (next == null) {
+      System.out.println("Was null.");
       return true;
     }
-    LocationType type = next.getType(); //<>//
-    if (type == null || type == LocationType.PLAYER || type == LocationType.WALL) //.equals()?
+    LocationType type = next.getType();
+    if (type == null || type == LocationType.PLAYER || type == LocationType.WALL)
     {
       return true;
     }
