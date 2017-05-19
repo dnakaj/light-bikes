@@ -48,7 +48,7 @@ class Player
     int x = ((int) random(w/5)) * 5;
     int y = ((int) random (h/5)) * 5;
     
-    System.out.println(x+" : "+y);
+    //System.out.println(x+" : "+y);
     
     playerLocations.add(new Location(x,y, c, LocationType.PLAYER));
   }
@@ -57,10 +57,11 @@ class Player
     return keyList;
   }
 
+  // Moves the bike forward x amount
   public void move ()
   {
     if (!alive) { return; }
-    
+     //<>//
     Location last = playerLocations.get(playerLocations.size()-1); //<>//
     Location next = null;
 
@@ -96,6 +97,18 @@ class Player
       playerLocations.add(next);
       next.setColor(this.col); 
     }
+  }
+  
+  void addSpeed(int speed) {
+    this.speed += speed; 
+  }
+  
+  void setSpeed(int speed) {
+    this.speed = speed; 
+  }
+  
+  color getColor() {
+    return this.col;
   }
   
   int lives() {

@@ -3,8 +3,9 @@
   int w = 0;
   int h = 0;
   final int topHeight = 50;
-  final int pixelSize = 5;
+  final int pixelSize = 20;
   Tron game;
+  TopBar bar = null;
   //Screen screen; // Start, Pick Color, game screen
  
  // Grid dimensions NOT dimensions of entire screen 
@@ -14,6 +15,7 @@
   
   
   void setup() {
+    //println(join(PFont.list(), "\n"));
     size(600,600);
     w = width;
     h = height;
@@ -39,6 +41,9 @@
     
     players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd', this.game));
     players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l', this.game));
+    players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n', this.game));
+    
+    bar = new TopBar(players, 0, topHeight/2 + topHeight/4);
   }
   
   ArrayList<Location> getGrid() {
@@ -50,6 +55,25 @@
   }
   
   Location getLocation(int x, int y) {
+   /* try {
+      if (x % pixelSize != 0) { return null; }
+      //println("getting: "+x+" : "+y);
+      int index = (y / pixelSize); // A faster way to get the index of a location
+      
+      for (int i=index; i<grid.size(); i++) {
+        Location loc = grid.get(i);
+        if (loc.getX() == x) {
+          println(loc.getY()+" y="+y+" : "+loc.getX()+" x="+x);
+          return loc;
+        }
+      }
+      //println("index: "+index);
+      //return grid.get(index);
+    } catch (IndexOutOfBoundsException e) {
+      e.printStackTrace(); // An exception should be thrown for debugging purposes 
+    }
+    return null;*/
+    // get (y-1) * getHeight() + x % pixelSize
     for (Location loc : grid) {
       if (loc.equals(new Location(x, y))) {
         return loc; 
@@ -74,23 +98,24 @@
   // Error: why doesnt it always log my key press?
   void keyPressed() {
     for (Player player : players) {
-      System.out.println("iterating players...");
+      //System.out.println("iterating players...");
       if (player.getKeys().contains(key)) {
      
-        System.out.println("key pressed...");
+        //System.out.println("key pressed...");
         player.changeDirection(key);
       }
     }
   }
   
   void draw() {
-    background(20,20,200);
+    background(187,187,187);
     // Draw the current screen
     for (Player player : players) {
        player.move(); // This will end up with a problem where if two players run into 
                       // eachother at same time, the player at index 0 with die first. 
     }
     render();
+    bar.render();
     //fill(color(50,50,50));
     //rect(300,200,2,2);
     
