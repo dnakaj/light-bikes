@@ -3,7 +3,7 @@
   int w = 0;
   int h = 0;
   final int topHeight = 50;
-  final int pixelSize = 20;
+  final int pixelSize = 5;
   Tron game;
   TopBar bar = null;
   //Screen screen; // Start, Pick Color, game screen
@@ -26,15 +26,12 @@
     boolean black = true;
     for (int r=topHeight; r<h; r+=pixelSize) {
       for (int c=0; c<w; c+=pixelSize) {  
-        if (black) {
-            black = false;
             grid.add(new Location(c, r, color(255,255,255), LocationType.AIR));
-        } else {
-          grid.add(new Location(c, r, color(0,0,0), LocationType.AIR)); 
-          black = true;
-        }
       }
-      black ^= true;
+    }
+    
+    for (Location l : grid) {
+      System.out.println(l); 
     }
     
     game = this;
@@ -55,10 +52,11 @@
   }
   
   Location getLocation(int x, int y) {
-   /* try {
+   try {
       if (x % pixelSize != 0) { return null; }
       //println("getting: "+x+" : "+y);
-      int index = (y / pixelSize); // A faster way to get the index of a location
+      y+=50;
+      int index = ((y-1) / pixelSize) * (this.w / pixelSize); // A faster way to get the index of a location
       
       for (int i=index; i<grid.size(); i++) {
         Location loc = grid.get(i);
@@ -72,14 +70,14 @@
     } catch (IndexOutOfBoundsException e) {
       e.printStackTrace(); // An exception should be thrown for debugging purposes 
     }
-    return null;*/
-    // get (y-1) * getHeight() + x % pixelSize
+    return null;
+    /* get (y-1) * getHeight() + x % pixelSize
     for (Location loc : grid) {
       if (loc.equals(new Location(x, y))) {
         return loc; 
       }
     }
-    return null;
+    return null;*/
   }
   
   void play() {
@@ -99,9 +97,7 @@
   void keyPressed() {
     for (Player player : players) {
       //System.out.println("iterating players...");
-      if (player.getKeys().contains(key)) {
-     
-        //System.out.println("key pressed...");
+      if (player.isKey(key)) {
         player.changeDirection(key);
       }
     }
@@ -116,8 +112,4 @@
     }
     render();
     bar.render();
-    //fill(color(50,50,50));
-    //rect(300,200,2,2);
-    
-    //grid.draw();
 }

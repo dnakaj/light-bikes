@@ -47,4 +47,8 @@ class Location {
   boolean equals(Location other) {
     return this.getX() == other.getX() && this.getY() == other.getY();
   }
+  
+  String toString() {
+    return "x="+x+",y="+y; 
+  }
 }

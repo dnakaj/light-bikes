@@ -8,7 +8,6 @@ class Player
   private color col;
   private String name;
   private ArrayList<Location> playerLocations;
-  private ArrayList<Character> keyList;
   private char direction;
   private int speed;
   private Tron game;
@@ -31,14 +30,7 @@ class Player
     game = g;
     alive = true;
     
-    keyList = new ArrayList();
-    
-    keyList.add(UP);
-    keyList.add(DOWN);
-    keyList.add(LEFT);
-    keyList.add(RIGHT);
-    
-    direction = keyList.get((int) random(keyList.size()));
+    direction = UP;
     
     playerLocations = new ArrayList<Location>();
     
@@ -48,21 +40,15 @@ class Player
     int x = ((int) random(w/5)) * 5;
     int y = ((int) random (h/5)) * 5;
     
-    //System.out.println(x+" : "+y);
-    
     playerLocations.add(new Location(x,y, c, LocationType.PLAYER));
   }
-
-  public ArrayList<Character> getKeys() {
-    return keyList;
-  }
-
+  
   // Moves the bike forward x amount
   public void move ()
   {
     if (!alive) { return; }
-     //<>//
-    Location last = playerLocations.get(playerLocations.size()-1); //<>//
+     //<>// //<>// //<>//
+    Location last = playerLocations.get(playerLocations.size()-1); //<>// //<>// //<>//
     Location next = null;
 
     if (direction == UP)
@@ -117,6 +103,10 @@ class Player
   
   void respawn() {
     this.alive = true; 
+  }
+
+  boolean isKey(char dir) {
+    return (dir == UP || dir == DOWN || dir == RIGHT || dir == LEFT);
   }
 
   // Changed int direction to char direction
