@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-class Player
+class Player implements Comparable
 {
   private final char UP, DOWN, LEFT, RIGHT;
   private final int upKey, downKey, leftKey, rightKey;
@@ -35,8 +35,8 @@ class Player
   public void move ()
   {
     if (!alive) { return; }
-     //<>// //<>// //<>//
-    Location last = playerLocations.get(playerLocations.size()-1); //<>// //<>// //<>//
+     //<>// //<>// //<>// //<>//
+    Location last = playerLocations.get(playerLocations.size()-1); //<>// //<>// //<>// //<>//
     Location next = null;
 
     if (direction == UP)
@@ -47,8 +47,8 @@ class Player
     else if (direction == DOWN)
     {
       next = getLocation(last.getX(), last.getY() + speed * getPixelSize());
-    }
-
+    } //<>// //<>//
+ //<>// //<>//
     else if (direction == LEFT)
     {
       next = getLocation(last.getX() - speed * getPixelSize(), last.getY());
@@ -61,7 +61,7 @@ class Player
 
     if (checkCrash (next))
     {
-      // Game over //<>//
+      // Game over //<>// //<>//
       this.lives --;
       this.alive = false;
     
@@ -69,6 +69,7 @@ class Player
       next.setType(LocationType.PLAYER);
       playerLocations.add(next);
       next.setColor(this.col); 
+      getGridCache().add(next);
     }
   }
   
@@ -93,13 +94,13 @@ class Player
     for (Player player : players) {
       count += 5;
       if (player.name().equals(this.name) && player.getColor() == this.col) {
-         y = count * (height / 20);
+         y = getTopHeight() + count * 5;
       }
     }
     
     this.playerLocations.add(new Location(x, y, this.col, LocationType.PLAYER));
     
-    println(x+","+y);
+    //println(x+","+y);
   }
 
   // Checks if the input char is one of the player's direction keys
@@ -140,6 +141,11 @@ class Player
     }
     
     return false;
+  }
+  
+  // CompareTo method for generating final leaderboard
+  int compareTo(Object player) {
+    return ((Player) this).lives - ((Player) player).lives;
   }
   
   

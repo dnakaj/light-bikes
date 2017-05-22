@@ -12,7 +12,7 @@ class Screen{
       //mousePressed();
       textAlign(CENTER);
       textSize(60);
-      text("Player One Select you're color", width/2, 50);
+      text("Player One Select your color", width/2, 50);
       textSize(16);
       red.draw();
       blue.draw();
@@ -23,7 +23,7 @@ class Screen{
       System.out.println("2");
       textAlign(CENTER);
       textSize(60);
-      text("Player Two Select you're color", width/2, 50);
+      text("Player Two Select your color", width/2, 50);
       textSize(16);
       
       red.draw();

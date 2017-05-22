@@ -3,18 +3,25 @@ class Wall {
   int y;
   int h;
   int w;
-  ArrayList<Location> grid;
   
-  Wall(int x, int y, int h, int w, ArrayList<Location> grid) {
+  Wall(int x, int y, int h, int w) {
     this.x = x;
     this.y = y;
     this.h = h;
     this.w = w;
-    this.grid = grid;
   }
   
   void render() {
-     // We need a faster way to jump to a location
+    int pixel = getPixelSize();
+    for (int xx = x; xx<x+w; xx += pixel) {
+      for (int yy = y; yy<y+h; yy += pixel) {
+        Location next = getLocation(xx, yy);
+        next.setColor(color(255,255,255));
+        next.setType(LocationType.WALL);
+         
+        getGridCache().add(next);
+      }
+    }
   }
   
   

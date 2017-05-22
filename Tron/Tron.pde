@@ -1,16 +1,21 @@
   import java.text.DecimalFormat;
+  import java.util.Collections;
+  import java.util.*;
   
   ArrayList<Player> players = new ArrayList();
   ArrayList<Location> grid = new ArrayList();
+  ArrayList<Location> gridCache = new ArrayList();
   int w = 0;
   int h = 0;
   final int topHeight = 50;
   final int pixelSize = 5;
-  Tron game;
   TopBar bar = null;
   boolean doRespawn = false;
+  boolean doFullRender = true;
+  boolean doLeaderboard = false;
+  boolean runGame = false;
   float framerate = 60;
-  double respawnTimer = 5.0;
+  double respawnTimer = 3.0;
   double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
   //Screen screen; // Start, Pick Color, game screen
  
@@ -24,6 +29,10 @@
     return players; 
   }
   
+  ArrayList<Location> getGridCache() {
+    return gridCache; 
+  }
+  
   void setup() {
    // println(join(PFont.list(), "\n"));
     size(600,600);
@@ -32,50 +41,59 @@
   
   void resetGame() {
     frameRate(framerate);
-    this.doRespawn = false;
     w = width;
     h = height;
     if (width % pixelSize != 0 || height % pixelSize != 0) {
       throw new IllegalArgumentException();
     }
-
-    //boolean row = true;
-    //boolean black = true;
-    for (int r=topHeight; r<h; r+=pixelSize) {
-      for (int c=0; c<w; c+=pixelSize) {  
-        //if (black) {
-        //    black = false;
-           grid.add(new Location(c, r, color(0), LocationType.AIR));
-        //} 
-        //else {
-          //grid.add(new Location(c, r, color(0,0,0), LocationType.AIR)); 
-          //black = true;
-        //}
-      }
-      //black ^= true;
-    }
     
     this.resetGrid();
+    this.doRespawn = false;
+    this.runGame = true;
     
     // Later on player 1 and player 2 will be taken from text box input (same for color)
-    players = new ArrayList();
-    players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd')); // One player mode breaks game
-    players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l'));
+    this.players = new ArrayList();
+    this.players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd')); // One player mode breaks game
+    this.players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l'));
     //players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n'));
     
-    PowerUp p = new PowerUp();
-    p.populate();
-    
-    bar = new TopBar(players, 0, topHeight/2 + topHeight/4);
+    this.bar = new TopBar(players, 0, topHeight/2 + topHeight/4);
+  }
+  
+  ArrayList<Player> getLeaderboard() {
+    ArrayList<Player> result = new ArrayList(players);
+    for (Player player : players) {
+        Collections.sort(result);
+        Collections.reverse(result);
+    }
+    return result;
+  }
+  
+  void gameOver() {
+    doLeaderboard = true;
+    frameRate(2);
+    redraw();
   }
   
   void resetGrid() {
+    background(187,187,187);
     this.grid = new ArrayList();
     for (int y=topHeight; y<h; y+=pixelSize) {
       for (int x=0; x<w; x+=pixelSize) {  
         grid.add(new Location(x, y));
       }
-    } 
+    }
+    
+    new Wall(50, h/2, 100, 15).render(); 
+    
+    new Wall(w-50, h/2, 100, 15).render();
+    
+    new Wall(w/2, topHeight+50, 15, 50).render();
+    
+    new Wall(w/2, h-50, 15, 50).render();
+    
+    this.gridCache = new ArrayList();
+    this.doFullRender = true; // Why does this variable save as true in this method, but not when placed into resetGame()?
   }
   
   ArrayList<Location> getGrid() {
@@ -136,13 +154,39 @@
   }
   
   void render() {
-    for (Location loc : grid) {
+    
+    /*
+      gridCache is a much more efficient way of rendering the grid -- instead of iterating every single location with each render(),
+      it only draws the locations which have changed, cutting down on lag.
+    */
+    
+    
+    
+    
+    ArrayList<Location> queue = gridCache;
+    
+    if (doFullRender) { // On the first render it should draw the entire grid
+        queue = grid;
+        doFullRender = false;
+    }
+    
+    for (Location loc : queue) {
       color c = loc.getColor();
       stroke(c);
       fill(c);
       
       rect(loc.getX(), loc.getY(), pixelSize, pixelSize);
     }
+    
+    gridCache = new ArrayList();
+    
+    /*for (Location loc : grid) {
+      color c = loc.getColor();
+      stroke(c);
+      fill(c);
+      
+      rect(loc.getX(), loc.getY(), pixelSize, pixelSize);
+    }*/
   }
   
   // Error: why doesnt it always log my key press?
@@ -155,13 +199,40 @@
   }
   
   void draw() {
-    background(187,187,187);
+    if (!runGame) { return; }
+    if (doLeaderboard) {
+      String leaderboard = "Game Over";
     
-    if (doRespawn) {
+      int place = 1;
+      for (Player player : getLeaderboard()) {
+        leaderboard += "\n"+(place++)+". "+player.name()+" ("+player.lives()+" lives)";
+      }
+      //delay(1000);
+      background(0,0,0);
+      textAlign(CENTER);
+      PFont f = createFont("Verdana Bold", 20, true);
+      textFont(f, 40);
+      fill(color(134, 244, 250));
+      text(leaderboard, width/2, height/2);
+      textAlign(BASELINE);
+      this.doLeaderboard = false;
+      this.runGame = false;
+      
+      // Need a way to keep this text on the screen without it getting overwritten by setup();
+      // Source for below code: https://stackoverflow.com/questions/2258066/java-run-a-function-after-a-specific-number-of-seconds
+      new java.util.Timer().schedule( 
+      new java.util.TimerTask() {
+          @Override
+          public void run() {
+            setup();
+            this.cancel();
+          }
+      }, 2000);
+      
+    } else if (doRespawn) {
       if (respawnTimer > 0) {
         background(0,0,0);
-        PFont f;
-        f = createFont("Verdana", 150, true);
+        PFont f = createFont("Verdana", 150, true);
         textFont(f, 40);
         fill(color(134, 244, 250));
         DecimalFormat df = new DecimalFormat("0.0");
@@ -181,8 +252,7 @@
         }
         
         if (count <= 1) {
-          println("Game over (restart now)"); 
-          setup();
+          gameOver();
           return;
         }
         
@@ -203,14 +273,15 @@
         } else {
           dead++;
           // NEED SOME SORT OF "FREEZE FRAME" when everyone dies before switching to timer.
-          if (player.lives() == 0) { eliminated++; println(player.lives()); }
+          if (player.lives() == 0) { eliminated++; }
         }
       }
       
       if (players.size() - dead <= 1) {
-        if (eliminated >= players.size() - 1) {
+        //delay(1000); // Pause frame for 1 second
+        if (eliminated >= players.size() - 1) { // Can probably merge the two calls to setup()
           // RETURN TO MENU / PLAY AGAIN SCREEN
-          setup(); 
+          gameOver();
           return;
         }
         frameRate(10);
