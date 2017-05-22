@@ -3,7 +3,7 @@
   int w = 0;
   int h = 0;
   final int topHeight = 50;
-  final int pixelSize = 20;
+  final int pixelSize = 5;
   Tron game;
   TopBar bar = null;
   //Screen screen; // Start, Pick Color, game screen
@@ -22,19 +22,20 @@
     if (width % pixelSize != 0 || height % pixelSize != 0) {
       throw new IllegalArgumentException();
     }
-    boolean row = true;
-    boolean black = true;
+    //boolean row = true;
+    //boolean black = true;
     for (int r=topHeight; r<h; r+=pixelSize) {
       for (int c=0; c<w; c+=pixelSize) {  
-        if (black) {
-            black = false;
-            grid.add(new Location(c, r, color(255,255,255), LocationType.AIR));
-        } else {
-          grid.add(new Location(c, r, color(0,0,0), LocationType.AIR)); 
-          black = true;
-        }
+        //if (black) {
+        //    black = false;
+           grid.add(new Location(c, r, color(0), LocationType.AIR));
+        //} 
+        //else {
+          //grid.add(new Location(c, r, color(0,0,0), LocationType.AIR)); 
+          //black = true;
+        //}
       }
-      black ^= true;
+      //black ^= true;
     }
     
     game = this;
@@ -42,6 +43,9 @@
     players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd', this.game));
     players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l', this.game));
     players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n', this.game));
+    
+    PowerUp p = new PowerUp();
+    p.populate();
     
     bar = new TopBar(players, 0, topHeight/2 + topHeight/4);
   }
