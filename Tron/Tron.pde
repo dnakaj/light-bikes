@@ -5,12 +5,8 @@
   int w = 0;
   int h = 0;
   final int topHeight = 50;
-<<<<<<< HEAD
   final int pixelSize = 5;
   Tron game;
-=======
-  final int pixelSize = 10;
->>>>>>> 63f9ab6fc8e7a64da0893e4774f0033fce9d9cf2
   TopBar bar = null;
   boolean doRespawn = false;
   float framerate = 60;
@@ -42,7 +38,7 @@
     if (width % pixelSize != 0 || height % pixelSize != 0) {
       throw new IllegalArgumentException();
     }
-<<<<<<< HEAD
+
     //boolean row = true;
     //boolean black = true;
     for (int r=topHeight; r<h; r+=pixelSize) {
@@ -58,8 +54,6 @@
       }
       //black ^= true;
     }
-=======
->>>>>>> 63f9ab6fc8e7a64da0893e4774f0033fce9d9cf2
     
     this.resetGrid();
     

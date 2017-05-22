@@ -1,7 +1,7 @@
 PFont font;
 Screen startscreen;
 int stage;
-
+/*
 void setup(){
   size(1000,1000);
   stage = 1;
@@ -22,4 +22,4 @@ void draw(){
     background(225);
     startscreen.draw();
   }
-}
+}*/
