@@ -36,7 +36,7 @@ class TopBar {
       messages.add(message);
       
       PFont f;
-      f = createFont("Verdana-Bold", fontSize, true);
+      f = createFont("Verdana-Bold", fontSize, true); // This actually uses the default font
       textFont(f, fontSize);
       fill(player.getColor());
       //text("■", tempX, this.y);
