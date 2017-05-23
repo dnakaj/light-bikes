@@ -27,18 +27,41 @@ class Player implements Comparable
     RIGHT = r;
     
     playerLocations = new ArrayList<Location>();
+  }
+  
+  public Player setSpawn(Location loc) {
+    this.respawn(loc); 
+    println(loc);
+    return this;
+  }
+  
+  public Player setDirection(String direction) { //<>//
+    switch (direction) { //<>//
+      case ("UP"):
+        this.direction = UP;
+        break;
+      case ("DOWN"):
+        this.direction = DOWN;
+        break;
+      case ("LEFT"):
+        this.direction = LEFT;
+        break;
+      case ("RIGHT"):
+        this.direction = RIGHT; //<>//
+        break;    //<>//
+    }
     
-    this.respawn();
+    return this;
   }
   
   // Moves the bike forward x amount
   public void move ()
   {
     if (!alive) { return; }
-     //<>// //<>// //<>// //<>//
-    Location last = playerLocations.get(playerLocations.size()-1); //<>// //<>// //<>// //<>//
+    
+    Location last = playerLocations.get(playerLocations.size()-1);
     Location next = null;
-
+ //<>//
     if (direction == UP)
     {
       next = getLocation(last.getX(), last.getY() - speed * getPixelSize());
@@ -47,8 +70,8 @@ class Player implements Comparable
     else if (direction == DOWN)
     {
       next = getLocation(last.getX(), last.getY() + speed * getPixelSize());
-    } //<>// //<>//
- //<>// //<>//
+    }
+    
     else if (direction == LEFT)
     {
       next = getLocation(last.getX() - speed * getPixelSize(), last.getY());
@@ -61,7 +84,7 @@ class Player implements Comparable
 
     if (checkCrash (next))
     {
-      // Game over //<>// //<>//
+      // Game over
       this.lives --;
       this.alive = false;
     
@@ -74,13 +97,22 @@ class Player implements Comparable
   }
   
   // (Re)spawns ths player in the arena and resets the relevant variables. Note that there is a very small chance of two players spawning on one another -- find a workaround for this later.
-  void respawn() {
-    
+  void respawn(int x, int y) {
+    if (x % 5 != 0 || y % 5 != 0) { throw new IllegalArgumentException(); }
     
     this.direction = RIGHT;
     this.alive = true; 
     this.speed = 1;
     this.playerLocations = new ArrayList();
+    
+    this.playerLocations.add(new Location(x, y, this.col, LocationType.PLAYER));
+  }
+  
+  void respawn(Location loc) {
+    respawn(loc.getX(), loc.getY()); 
+  }
+  
+  void respawn() {
     
     int w = getWidth();
     int h = getHeight();
@@ -98,7 +130,7 @@ class Player implements Comparable
       }
     }
     
-    this.playerLocations.add(new Location(x, y, this.col, LocationType.PLAYER));
+    respawn(x, y);
     
     //println(x+","+y);
   }

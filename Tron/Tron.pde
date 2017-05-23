@@ -3,6 +3,8 @@
   import java.util.*;
   
   ArrayList<Player> players = new ArrayList();
+  ArrayList<String> directions = new ArrayList();
+  HashMap<String, Location> spawns = new HashMap();
   ArrayList<Location> grid = new ArrayList();
   ArrayList<Location> gridCache = new ArrayList();
   int w = 0;
@@ -35,6 +37,11 @@
   
   void setup() {
    // println(join(PFont.list(), "\n"));
+    directions = new ArrayList();
+    directions.add("LEFT");
+    directions.add("RIGHT");
+    directions.add("DOWN");
+    directions.add("UP");
     size(600,600);
     resetGame();
   }
@@ -53,8 +60,19 @@
     
     // Later on player 1 and player 2 will be taken from text box input (same for color)
     this.players = new ArrayList();
-    this.players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd')); // One player mode breaks game
-    this.players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l'));
+    
+    // Size = 2 for now -- later can do a for loop given the amount of players
+    // Four locations = (0 + WIDTH/
+    spawns = new HashMap();
+    spawns.put("RIGHT", new Location(50, (h - topHeight) / 2)); // LEFT SIDE
+    spawns.put("LEFT", new Location(w-50, (h - topHeight) / 2)); // RIGHT SIDE
+    spawns.put("DOWN", new Location(w/2, topHeight + 50)); // TOP SIDE
+    spawns.put("UP", new Location(w/2, h - 50)); // BOTTOM SIDE
+    
+    String dir = "RIGHT";
+    this.players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd').setSpawn(spawns.get(dir)).setDirection(dir)); // One player mode breaks game
+    dir = "LEFT";
+    this.players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l').setSpawn(spawns.get(dir)).setDirection(dir));
     //players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n'));
     
     this.bar = new TopBar(players, 0, topHeight/2 + topHeight/4);
@@ -75,6 +93,18 @@
     redraw();
   }
   
+  void populateGrid() {
+    int chance = (int) random(10);
+    if (chance <= 3) {
+      println("WALL?");
+      int hh = ((int) random(50) + 1) * 5;
+      int ww = ((int) random(30) + 1) * 5;
+      println(hh+" : "+ww);
+      println((w/2));
+      new Wall(w/2, 190, hh, ww).render();
+    }
+  }
+  
   void resetGrid() {
     background(187,187,187);
     this.grid = new ArrayList();
@@ -83,7 +113,8 @@
         grid.add(new Location(x, y));
       }
     }
-    
+    populateGrid();
+    /*
     new Wall(50, h/2, 100, 15).render(); 
     
     new Wall(w-50, h/2, 100, 15).render();
@@ -91,7 +122,7 @@
     new Wall(w/2, topHeight+50, 15, 50).render();
     
     new Wall(w/2, h-50, 15, 50).render();
-    
+    */
     this.gridCache = new ArrayList();
     this.doFullRender = true; // Why does this variable save as true in this method, but not when placed into resetGame()?
   }
@@ -229,7 +260,7 @@
           }
       }, 2000);
       
-    } else if (doRespawn) {
+    } else if (this.doRespawn) {
       if (respawnTimer > 0) {
         background(0,0,0);
         PFont f = createFont("Verdana", 150, true);
@@ -244,9 +275,13 @@
         respawnTimer = respawnTimerBackup;
         this.resetGrid();
         int count = 0;
+        Iterator<String> it = directions.iterator();
         for (Player player : players) {
           if (player.lives() > 0) {
-            player.respawn();
+            String dir = it.next(); // just assume # players <= # of directions
+            player.respawn(spawns.get(dir));
+            player.setDirection(dir);
+            println(dir);
             count++;
           }
         }
@@ -256,7 +291,7 @@
           return;
         }
         
-        doRespawn = false;
+        this.doRespawn = false;
         frameRate(framerate);
         return;
       }
