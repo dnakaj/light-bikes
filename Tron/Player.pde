@@ -153,13 +153,13 @@ class Player implements Comparable
     
     this.direction = RIGHT;
     this.alive = true; 
-    this.speed = 4;
+    this.speed = 1;
     this.playerLocations = new ArrayList();
     this.playerLocations.add(new Location(x, y, this.col, LocationType.PLAYER));
   }
   
   void respawn(Location loc) {
-    respawn(loc.getX(), loc.getY()); 
+    respawn(loc.getX(), loc.getY());
   }
   
   void respawn() {

@@ -14,6 +14,9 @@ class TopBar {
   }
   
   void render() {
+     stroke(color(50,50,50));
+     fill(color(50,50,50));
+     rect(0,0,getWidth(), getTopHeight());
      int tempX = this.x;
      int fontSize = 150 / (players.size() * 2);
      
@@ -35,7 +38,7 @@ class TopBar {
       String message = bar.toString();
       messages.add(message);
       
-      PFont f = createFont("HelveticaNeue", 1, true);
+      PFont f = createFont("HelveticaNeue-Thin", 1, true);
       //f = getFont(); // This actually uses the default font
       textFont(f, fontSize);
       fill(player.getColor());

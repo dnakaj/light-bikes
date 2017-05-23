@@ -130,20 +130,21 @@
   }
   
   void resetGrid() {
-    background(187,187,187);
+    background(50,50,50);
     this.grid = new ArrayList();
-    boolean black = true;
+    //boolean black = true;
     for (int y=topHeight; y<h; y+=pixelSize) {
       for (int x=0; x<w; x+=pixelSize) {  
-        if (black) {
+          grid.add(new Location(x, y));
+        /*if (black) {
           grid.add(new Location(x, y, color(0,0,0), LocationType.AIR));
           black ^= true;
         } else {
           grid.add(new Location(x, y, color(255,255,255), LocationType.AIR));
           black ^= true;
-        }
+        }*/
       }
-      black ^= true;
+      //black ^= true;
     }
     populateGrid();
     /*
