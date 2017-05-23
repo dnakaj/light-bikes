@@ -2,11 +2,36 @@
   import java.util.Collections;
   import java.util.*;
   
+  /*
+    Helvetica
+    Helvetica-Bold
+    Helvetica-BoldOblique
+    Helvetica-Light
+    Helvetica-LightOblique
+    Helvetica-Oblique
+    HelveticaNeue
+    HelveticaNeue-Bold
+    HelveticaNeue-BoldItalic
+    HelveticaNeue-CondensedBlack
+    HelveticaNeue-CondensedBold
+    HelveticaNeue-Italic
+    HelveticaNeue-Light
+    HelveticaNeue-LightItalic
+    HelveticaNeue-Medium
+    HelveticaNeue-MediumItalic
+    HelveticaNeue-Thin
+    HelveticaNeue-ThinItalic
+    HelveticaNeue-UltraLight
+    HelveticaNeue-UltraLightItalic
+  */
+  
   ArrayList<Player> players = new ArrayList();
   ArrayList<String> directions = new ArrayList();
   HashMap<String, Location> spawns = new HashMap();
   ArrayList<Location> grid = new ArrayList();
   ArrayList<Location> gridCache = new ArrayList();
+  
+  PFont f = null;
   int w = 0;
   int h = 0;
   final int topHeight = 50;
@@ -26,6 +51,7 @@
   int getHeight() { return h; }
   int getTopHeight() { return topHeight; }
   int getPixelSize() { return pixelSize; }
+  PFont getFont() { return f; }
   
   ArrayList<Player> getPlayers() { // Yes we don't actually need this getter, but it's good practice
     return players; 
@@ -36,13 +62,14 @@
   }
   
   void setup() {
-   // println(join(PFont.list(), "\n"));
+    f = createFont("HelveticaNeue-Light", 60, true);
+    //println(join(PFont.list(), "\n"));
     directions = new ArrayList();
     directions.add("LEFT");
     directions.add("RIGHT");
     directions.add("DOWN");
     directions.add("UP");
-    size(600,600);
+    size(800,720);
     resetGame();
   }
   
@@ -69,7 +96,7 @@
     spawns.put("DOWN", new Location(w/2, topHeight + 50)); // TOP SIDE
     spawns.put("UP", new Location(w/2, h - 50)); // BOTTOM SIDE
     
-    String dir = "RIGHT";
+    String dir = "RIGHT"; // Need to add players in reverse so that when they respawn, they move in the right direction
     this.players.add(new Player("Player 1", color(255,50,50), 'w', 'a', 's', 'd').setSpawn(spawns.get(dir)).setDirection(dir)); // One player mode breaks game
     dir = "LEFT";
     this.players.add(new Player("Player 2", color(174, 237, 40), 'i', 'j', 'k', 'l').setSpawn(spawns.get(dir)).setDirection(dir));
@@ -96,11 +123,8 @@
   void populateGrid() {
     int chance = (int) random(10);
     if (chance <= 3) {
-      println("WALL?");
       int hh = ((int) random(50) + 1) * 5;
       int ww = ((int) random(30) + 1) * 5;
-      println(hh+" : "+ww);
-      println((w/2));
       new Wall(w/2, 190, hh, ww).render();
     }
   }
@@ -108,10 +132,18 @@
   void resetGrid() {
     background(187,187,187);
     this.grid = new ArrayList();
+    boolean black = true;
     for (int y=topHeight; y<h; y+=pixelSize) {
       for (int x=0; x<w; x+=pixelSize) {  
-        grid.add(new Location(x, y));
+        if (black) {
+          grid.add(new Location(x, y, color(0,0,0), LocationType.AIR));
+          black ^= true;
+        } else {
+          grid.add(new Location(x, y, color(255,255,255), LocationType.AIR));
+          black ^= true;
+        }
       }
+      black ^= true;
     }
     populateGrid();
     /*
@@ -206,7 +238,7 @@
       stroke(c);
       fill(c);
       
-      rect(loc.getX(), loc.getY(), pixelSize, pixelSize);
+      rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
     }
     
     gridCache = new ArrayList();
@@ -232,19 +264,23 @@
   void draw() {
     if (!runGame) { return; }
     if (doLeaderboard) {
-      String leaderboard = "Game Over";
+      String gameOver = "Game Over";
+      String leaderboard = "";
     
       int place = 1;
       for (Player player : getLeaderboard()) {
         leaderboard += "\n"+(place++)+". "+player.name()+" ("+player.lives()+" lives)";
       }
-      //delay(1000);
+      
       background(0,0,0);
+      PFont f2 = createFont("HelveticaNeue-Bold", 85, true);
       textAlign(CENTER);
-      PFont f = createFont("Verdana Bold", 20, true);
-      textFont(f, 40);
+      textFont(f2);
       fill(color(134, 244, 250));
-      text(leaderboard, width/2, height/2);
+      text(gameOver, width/2, height/2);
+      
+      textFont(f);
+      text(leaderboard, width/2, height/2 + 15); // Make text size a variable
       textAlign(BASELINE);
       this.doLeaderboard = false;
       this.runGame = false;
@@ -263,25 +299,25 @@
     } else if (this.doRespawn) {
       if (respawnTimer > 0) {
         background(0,0,0);
-        PFont f = createFont("Verdana", 150, true);
-        textFont(f, 40);
+        textFont(f, 60);
         fill(color(134, 244, 250));
         DecimalFormat df = new DecimalFormat("0.0");
         textAlign(CENTER);
-        text("Restarting in\n "+df.format(respawnTimer), width/2, height/2);
+        text("Restarting In\n"+df.format(respawnTimer), width/2, height/2);
         textAlign(BASELINE);
         respawnTimer -= 0.1;
       } else {
         respawnTimer = respawnTimerBackup;
         this.resetGrid();
         int count = 0;
-        Iterator<String> it = directions.iterator();
-        for (Player player : players) {
+        
+        int index = 0;
+        for (int i=players.size()-1; i>=0; i--) {
+          Player player = players.get(i);
           if (player.lives() > 0) {
-            String dir = it.next(); // just assume # players <= # of directions
+            String dir = directions.get(index++); // just assume # players <= # of directions
             player.respawn(spawns.get(dir));
             player.setDirection(dir);
-            println(dir);
             count++;
           }
         }

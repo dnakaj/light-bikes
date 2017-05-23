@@ -29,14 +29,15 @@ class Player implements Comparable
     playerLocations = new ArrayList<Location>();
   }
   
+  
   public Player setSpawn(Location loc) {
-    this.respawn(loc); 
-    println(loc);
+    this.respawn(loc);
     return this;
   }
   
+   //<>//
   public Player setDirection(String direction) { //<>//
-    switch (direction) { //<>//
+    switch (direction) {
       case ("UP"):
         this.direction = UP;
         break;
@@ -46,13 +47,47 @@ class Player implements Comparable
       case ("LEFT"):
         this.direction = LEFT;
         break;
-      case ("RIGHT"):
+      case ("RIGHT"): //<>//
         this.direction = RIGHT; //<>//
-        break;    //<>//
+        break;   
     }
     
     return this;
   }
+  
+  
+  ArrayList<Location> getLine(Location from, Location to) {
+    // Add delta X and add delta Y (if vertical, delta x = 0, if horizontal, delta y = 0)
+    if (to == null) { return new ArrayList(); } // In the future need a way to get all the points up to the border so that it draws a complete line.
+    
+    ArrayList<Location> result = new ArrayList();
+    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>//
+    int deltaY = (from.getY() - to.getY())/getPixelSize();
+    
+    // Ensures that the deltaX and deltaY are valid (might not need this because we already know the location is valid)
+    //if (deltaX % getPixelSize() != 0 || deltaY % getPixelSize() != 0) { throw new IllegalArgumentException(); }
+    
+    int currentX = from.getX();
+    int currentY = from.getY();
+    
+    // Code from: https://stackoverflow.com/questions/13988805/fastest-way-to-get-sign-in-java
+    int xSign = (int) Math.signum(deltaX);
+    int ySign = (int) Math.signum(deltaY);
+    
+    for (int i=0; i<Math.abs(deltaX + deltaY); i++) { // This should include "to". deltaX + deltaY will be the amount of blocks to go up/horizontal because one should always be 0.
+      currentX -= xSign * getPixelSize();
+      currentY -= ySign * getPixelSize();
+      Location loc = getLocation(currentX, currentY);
+      
+      result.add(loc);
+      if (loc == null) {
+        return result; 
+      }
+    }
+    
+    return result;
+  }
+  
   
   // Moves the bike forward x amount
   public void move ()
@@ -61,7 +96,9 @@ class Player implements Comparable
     
     Location last = playerLocations.get(playerLocations.size()-1);
     Location next = null;
- //<>//
+
+    // For the speed, iterate x blocks between last and next
+    
     if (direction == UP)
     {
       next = getLocation(last.getX(), last.getY() - speed * getPixelSize());
@@ -81,30 +118,43 @@ class Player implements Comparable
     {
       next = getLocation(last.getX() + speed * getPixelSize(), last.getY());
     }
-
-    if (checkCrash (next))
-    {
-      // Game over
-      this.lives --;
-      this.alive = false;
     
-    } else {
-      next.setType(LocationType.PLAYER);
-      playerLocations.add(next);
-      next.setColor(this.col); 
-      getGridCache().add(next);
+    ArrayList<Location> line = getLine(last, next);
+    
+    if (line.size() == 0) {
+      gameOver(); 
+      return;
+    }
+    
+    // Instantly crashes player despite output saying otherwise
+    for (Location loc : line) {
+      if (checkCrash (loc)) {
+        gameOver(); 
+        return;
+      } else {
+        loc.setType(LocationType.PLAYER);
+        loc.setColor(this.col); 
+        
+        playerLocations.add(loc);
+        getGridCache().add(loc);
+      }
     }
   }
   
+  void gameOver() {
+    this.lives --;
+    this.alive = false;
+  }
+  
+  
   // (Re)spawns ths player in the arena and resets the relevant variables. Note that there is a very small chance of two players spawning on one another -- find a workaround for this later.
   void respawn(int x, int y) {
-    if (x % 5 != 0 || y % 5 != 0) { throw new IllegalArgumentException(); }
+    if (x % getPixelSize() != 0 || y % getPixelSize() != 0) { throw new IllegalArgumentException(); }
     
     this.direction = RIGHT;
     this.alive = true; 
-    this.speed = 1;
+    this.speed = 4;
     this.playerLocations = new ArrayList();
-    
     this.playerLocations.add(new Location(x, y, this.col, LocationType.PLAYER));
   }
   
@@ -121,24 +171,24 @@ class Player implements Comparable
     if (x > w/2) { x = w/2; } // Ensures player starts on left side of screen
     
     int y = ((int) random(h/getPixelSize())) * getPixelSize();
-    if (y < getTopHeight()) { y = topHeight + (int) random(h/5 - topHeight); }
+    if (y < getTopHeight()) { y = topHeight + (int) random(h/getPixelSize() - topHeight); }
     int count = 0; 
     for (Player player : players) {
-      count += 5;
+      count += getPixelSize();
       if (player.name().equals(this.name) && player.getColor() == this.col) {
-         y = getTopHeight() + count * 5;
+         y = getTopHeight() + count * getPixelSize();
       }
     }
     
     respawn(x, y);
-    
-    //println(x+","+y);
   }
+
 
   // Checks if the input char is one of the player's direction keys
   boolean isKey(char dir) {
     return (dir == UP || dir == DOWN || dir == RIGHT || dir == LEFT);
   }
+  
 
   // Switches the player's direction
   public void changeDirection (char dir)
@@ -148,6 +198,7 @@ class Player implements Comparable
       direction = dir;
     }
   }
+  
 
   // Checks if player can move in that direction. Prevents player from moving in the direction opposite of their current direction
   private boolean validMove(char dir) {
