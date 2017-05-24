@@ -35,8 +35,8 @@ class Player implements Comparable
     return this;
   }
   
-   //<>//
-  public Player setDirection(String direction) { //<>//
+  // Moves player in the specified direction //<>//
+  public Player setDirection(String direction) { //<>// //<>//
     switch (direction) {
       case ("UP"):
         this.direction = UP;
@@ -47,21 +47,21 @@ class Player implements Comparable
       case ("LEFT"):
         this.direction = LEFT;
         break;
-      case ("RIGHT"): //<>//
-        this.direction = RIGHT; //<>//
+      case ("RIGHT"): //<>// //<>//
+        this.direction = RIGHT; //<>// //<>//
         break;   
     }
     
     return this;
   }
   
-  
+  // Gets the line of locations between two points (used for when speed > 1)
   ArrayList<Location> getLine(Location from, Location to) {
     // Add delta X and add delta Y (if vertical, delta x = 0, if horizontal, delta y = 0)
     if (to == null) { return new ArrayList(); } // In the future need a way to get all the points up to the border so that it draws a complete line.
     
     ArrayList<Location> result = new ArrayList();
-    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>//
+    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>// //<>//
     int deltaY = (from.getY() - to.getY())/getPixelSize();
     
     // Ensures that the deltaX and deltaY are valid (might not need this because we already know the location is valid)
@@ -141,6 +141,7 @@ class Player implements Comparable
     }
   }
   
+  // Stops the player from moving and subtracts 1 from their life pool
   void gameOver() {
     this.lives --;
     this.alive = false;
@@ -162,6 +163,7 @@ class Player implements Comparable
     respawn(loc.getX(), loc.getY());
   }
   
+  /* An old method for randomly spawning the player in the map
   void respawn() {
     
     int w = getWidth();
@@ -181,7 +183,7 @@ class Player implements Comparable
     }
     
     respawn(x, y);
-  }
+  }*/
 
 
   // Checks if the input char is one of the player's direction keys
@@ -232,7 +234,9 @@ class Player implements Comparable
   }
   
   
-  // Getter / Setter methods -- should make these stylistcally the same (either get/set, or just the variable [eg. setSpeed() vs speed()]
+  /* 
+   * Getter / Setter methods -- should make these stylistcally the same (either get/set, or just the variable [eg. setSpeed() vs speed()]
+   */
   void addSpeed(int speed) {
     this.speed += speed; 
   }

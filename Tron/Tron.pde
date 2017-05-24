@@ -73,6 +73,7 @@
     resetGame();
   }
   
+  // Resets the framerate, screen size, fields, playerlist, and game grid.
   void resetGame() {
     frameRate(framerate);
     w = width;
@@ -105,6 +106,7 @@
     this.bar = new TopBar(players, 0, topHeight/2 + topHeight/4);
   }
   
+  // Returns a sorted leaderboard of players (most lives left -> least)
   ArrayList<Player> getLeaderboard() {
     ArrayList<Player> result = new ArrayList(players);
     for (Player player : players) {
@@ -114,12 +116,14 @@
     return result;
   }
   
+  // Sets framerate to 2 and displays the game over screen (via call to draw)
   void gameOver() {
     doLeaderboard = true;
     frameRate(2);
     redraw();
   }
   
+  // Places walls and powerups on the grid
   void populateGrid() {
     int chance = (int) random(10);
     if (chance <= 3) {
@@ -129,6 +133,7 @@
     }
   }
   
+  // Cleans the grid and and resets grid cache
   void resetGrid() {
     background(50,50,50);
     this.grid = new ArrayList();
@@ -168,6 +173,7 @@
     return getLocation(loc.getX(), loc.getY()); 
   }
   
+  // Returns the location associated with a given x and y coordinate (or null if nonexistant)
   Location getLocation(int x, int y) {
     /* The initial, much slower way of fetching a location from the grid
     println();
@@ -217,15 +223,13 @@
     return null;
   }
   
+  // Draws the current game screen (and only draws new locations as opposed to drawing every location every time)
   void render() {
     
     /*
       gridCache is a much more efficient way of rendering the grid -- instead of iterating every single location with each render(),
       it only draws the locations which have changed, cutting down on lag.
     */
-    
-    
-    
     
     ArrayList<Location> queue = gridCache;
     
@@ -253,7 +257,7 @@
     }*/
   }
   
-  // Error: why doesnt it always log my key press?
+  // Moves respective player when a key is pressed
   void keyPressed() {
     for (Player player : players) {
       if (player.isKey(key)) {
@@ -262,6 +266,7 @@
     }
   }
   
+  // Draws the game screen (grid if it's in game, respawn screen, and game over screen)
   void draw() {
     if (!runGame) { return; }
     if (doLeaderboard) {
