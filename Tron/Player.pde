@@ -35,8 +35,8 @@ class Player implements Comparable
     return this;
   }
 
-  // Moves player in the specified direction //<>//
-  public Player setDirection(String direction) { //<>// //<>//
+  // Moves player in the specified direction //<>// //<>//
+  public Player setDirection(String direction) { //<>// //<>// //<>//
     switch (direction) {
       case ("UP"):
         this.direction = UP;
@@ -47,8 +47,8 @@ class Player implements Comparable
       case ("LEFT"):
         this.direction = LEFT;
         break;
-      case ("RIGHT"): //<>// //<>//
-        this.direction = RIGHT; //<>// //<>//
+      case ("RIGHT"): //<>// //<>// //<>//
+        this.direction = RIGHT; //<>// //<>// //<>//
         break;
     }
 
@@ -61,7 +61,7 @@ class Player implements Comparable
     if (to == null) { return new ArrayList(); } // In the future need a way to get all the points up to the border so that it draws a complete line.
 
     ArrayList<Location> result = new ArrayList();
-    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>// //<>//
+    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>// //<>// //<>//
     int deltaY = (from.getY() - to.getY())/getPixelSize();
 
     // Ensures that the deltaX and deltaY are valid (might not need this because we already know the location is valid)
@@ -90,7 +90,7 @@ class Player implements Comparable
 
 
   // Moves the bike forward x amount
-  public void move ()
+  public void move()
   {
     if (!alive) { return; }
 
