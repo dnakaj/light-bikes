@@ -127,6 +127,7 @@
       int ww = ((int) random(30) + 1) * 5;
       new Wall(w/2, 190, hh, ww).render();
     }
+    new PowerUp().populate();
   }
   
   void resetGrid() {

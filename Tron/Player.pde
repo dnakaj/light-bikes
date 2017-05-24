@@ -9,7 +9,7 @@ class Player implements Comparable
   private String name;
   private ArrayList<Location> playerLocations;
   private char direction;
-  private int speed;
+  private double speed;
   private boolean alive;
   int lives = 3;
 
@@ -35,8 +35,8 @@ class Player implements Comparable
     return this;
   }
   
-   //<>//
-  public Player setDirection(String direction) { //<>//
+   //<>// //<>//
+  public Player setDirection(String direction) { //<>// //<>//
     switch (direction) {
       case ("UP"):
         this.direction = UP;
@@ -47,8 +47,8 @@ class Player implements Comparable
       case ("LEFT"):
         this.direction = LEFT;
         break;
-      case ("RIGHT"): //<>//
-        this.direction = RIGHT; //<>//
+      case ("RIGHT"): //<>// //<>//
+        this.direction = RIGHT; //<>// //<>//
         break;   
     }
     
@@ -61,7 +61,7 @@ class Player implements Comparable
     if (to == null) { return new ArrayList(); } // In the future need a way to get all the points up to the border so that it draws a complete line.
     
     ArrayList<Location> result = new ArrayList();
-    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>//
+    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>// //<>//
     int deltaY = (from.getY() - to.getY())/getPixelSize();
     
     // Ensures that the deltaX and deltaY are valid (might not need this because we already know the location is valid)
@@ -101,22 +101,22 @@ class Player implements Comparable
     
     if (direction == UP)
     {
-      next = getLocation(last.getX(), last.getY() - speed * getPixelSize());
+      next = getLocation(last.getX(), (int)(last.getY() - speed * getPixelSize()));
     }
 
     else if (direction == DOWN)
     {
-      next = getLocation(last.getX(), last.getY() + speed * getPixelSize());
+      next = getLocation(last.getX(), (int)(last.getY() + speed * getPixelSize()));
     }
     
     else if (direction == LEFT)
     {
-      next = getLocation(last.getX() - speed * getPixelSize(), last.getY());
+      next = getLocation((int)(last.getX() - speed * getPixelSize()), last.getY());
     }
 
     else if (direction == RIGHT)
     {
-      next = getLocation(last.getX() + speed * getPixelSize(), last.getY());
+      next = getLocation((int)(last.getX() + speed * getPixelSize()), last.getY());
     }
     
     ArrayList<Location> line = getLine(last, next);
@@ -217,6 +217,11 @@ class Player implements Comparable
     
     LocationType type = next.getType();
     
+    if (type == LocationType.POWERUP)
+    {
+      addSpeed(new PowerUp ().changeSpeed());
+    }
+    
     if ((type == LocationType.PLAYER || type == LocationType.WALL) || 
         (next.getY() != last.getY() && (direction == LEFT || direction == RIGHT)) || 
         (next.getX() != last.getX() && (direction == UP || direction == DOWN))) { // This is to prevent bike from wrapping around edge of grid, because grid is a 1d array
@@ -233,11 +238,11 @@ class Player implements Comparable
   
   
   // Getter / Setter methods -- should make these stylistcally the same (either get/set, or just the variable [eg. setSpeed() vs speed()]
-  void addSpeed(int speed) {
+  void addSpeed(double speed) {
     this.speed += speed; 
   }
   
-  void setSpeed(int speed) {
+  void setSpeed(double speed) {
     this.speed = speed; 
   }
   
