@@ -22,7 +22,9 @@ class Button{
       return true;
     }
     else{
-      return false;}}
+      return false;
+    }
+  }
 
   void update(int s, int z){
     if(over(this.x, this.y)){
@@ -36,6 +38,7 @@ class Button{
       System.out.println("1");
     }else{
       System.out.println("-1");
-    }}
+    }
+  }
 
 }

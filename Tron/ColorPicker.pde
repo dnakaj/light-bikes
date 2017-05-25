@@ -23,22 +23,27 @@ class ColorPicker {
     this.currentPlayer = player;
   }
 
-  void keyPressed(){
-      if(key == '1'){
-        currentPlayer.setColor(color(255,0,0));
-      }
-      if(key == '2'){
-        currentPlayer.setColor(color(255,105,180));
-      }
-      if(key == '3'){
-        currentPlayer.setColor(color(0,0,255));
-      }
-      if(key == '4'){
-        currentPlayer.setColor(color(0,255,255));
-      }
+  void keyPressed() {
+    if(key == '1'){
+      currentPlayer.setColor(color(255,0,0));
     }
+    if(key == '2'){
+      currentPlayer.setColor(color(255,105,180));
+    }
+    if(key == '3'){
+      currentPlayer.setColor(color(0,0,255));
+    }
+    if(key == '4'){
+      currentPlayer.setColor(color(0,255,255));
+    }
+  }
 
-  void draw(){
+  void draw() {
+      if (currentPlayer == null) {
+        throw new NullPointerException(); 
+      }
+      println("drawing!");
+      //background(0,0,0);
       textAlign(CENTER);
       textSize(60);
       text("Please select your color", width/2, 50);

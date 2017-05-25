@@ -1,9 +1,17 @@
 class TextBox{
   String input;
+  Player player;
   color col = color(0,0,0);;
   PFont f;
-  public TextBox(){
-    input = "";
+  
+  public TextBox(Player player){
+    if (player.name() != null) {
+      input = player.name();
+    } else {
+      input = ""; 
+    }
+    
+    this.player = player;
     f = createFont("HelveticaNeue-Light", 60, true);
   }
 
@@ -33,6 +41,7 @@ class TextBox{
     } else if (input.length() <= 10) { // add key
       println(key);
       input += key;
+      player.setPlayerName(player.name() + key);
     } else { // input is too long
       println("Your input cannot be longer than 10 characters.");
     }

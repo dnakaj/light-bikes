@@ -265,6 +265,10 @@ class Player implements Comparable
     return this.lives;
   }
 
+  void setPlayerName(String name) {
+    this.name = name; 
+  }
+
   String name() {
     return this.name;
   }

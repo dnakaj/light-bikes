@@ -408,49 +408,50 @@ void startMenu() {
   background(150,150,150);
   text("TRON", width/2, height/2);
   textSize(34);
-  text("Press '1' to play", width/2, height/2 + 50);
-  if (key == '1')
+  text("Press ' ' to play", width/2, height/2 + 50);
+  if (key == ' ') { // Had to change key because it was logging the 1 as the key pressed to pick a color at the same time
     state = GameState.CREATE_PLAYER;
+  }
 }
 
 // Displays color picker screen until player has picked a color
-boolean pickColor(Player player, ColorPicker picker) {
+void pickColor(Player player, ColorPicker picker) {
   // Going to get some nice errors here
-  //while (true) {
-    println("Looping.");
-    picker.draw();
-    //while (player.getColor() == color(0,0,0)) {
-    println("drawing.");
-    //picker.draw();
-      /*
-      try {
-        Thread.sleep(500);
-        picker.draw();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }*/
-    }
-    
-    TextBox nameInput = new TextBox();
+  picker.setPlayer(player);
+  background(0,200,200);
+  
+  if (player.getColor() != color(0,0,0)) {
+    TextBox nameInput = new TextBox(player);
+    nameInput.keyPressed();
     nameInput.draw();
-    
-    if (player.name() != null) {
-      return true;
-    }
-  //}
+  } else {
+    picker.draw();
+    println("Key="+key);
+    picker.keyPressed();
+  }
+  
+  key = '-';
 }
 
 // Player selection ColorPicker -- pick a name and color
 void createPlayer() {
+  //this.state = GameState.WAITING;
   ColorPicker colorPicker = new ColorPicker();
   int index = 0;
   
-  while (index < players.size()) {
-    println("Picking for a player");
-    pickColor(players.get(index), colorPicker);
+  for (Player player : players) {
+    if ((player.name() == null || player.name().length() < 10) ||  player.getColor() != color(0,0,0)) {
+       pickColor(players.get(index), colorPicker);
+       return;
+    }
+    index++;
   }
-  
+  println("Updated game state");
   state = GameState.PLAY_GAME;
+  
+  
+  // Update game state only if all players have name and color
+  
  
  /*
   switch(currentPlayer) {
@@ -484,17 +485,17 @@ void createPlayer() {
 void draw() {
   switch(state) {
     case MENU:
+      background(0,200,0);
       startMenu();
       break;
     case CREATE_PLAYER:
+      //background(0,200,0);
+      frameRate(20);
       createPlayer();
       break;
     case PLAY_GAME:
+      frameRate(framerate);
       playGame();
-      break;
-    default:
-      System.out.println("State does not exist.");
-      exit();
       break;
   }
 }
