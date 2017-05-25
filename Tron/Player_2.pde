@@ -11,13 +11,11 @@ class Player implements Comparable
   private char direction;
   private double speed;
   private boolean alive;
-  Random generator = new Random ();
   int lives = 3;
 
-  public Player (String n, color c, char u, char l, char d, char r)
+  //Changed the constructor so that it did not initialize it's name or color
+  public Player (char u, char l, char d, char r)
   {
-    name = n;
-    col = c;
     upKey = u;
     downKey = d;
     leftKey = l;
@@ -148,6 +146,9 @@ class Player implements Comparable
     this.alive = false;
   }
 
+  void setColor(color other){
+    this.col = other;
+  }
 
   // (Re)spawns ths player in the arena and resets the relevant variables. Note that there is a very small chance of two players spawning on one another -- find a workaround for this later.
   void respawn(int x, int y) {
@@ -222,12 +223,7 @@ class Player implements Comparable
 
     if (type == LocationType.POWERUP)
     {
-      double change;
-      if (generator.nextBoolean())
-        change = 0.5;
-      else
-        change = -0.5;
-      addSpeed(change);
+      addSpeed(new PowerUp ().changeSpeed());
     }
 
     if ((type == LocationType.PLAYER || type == LocationType.WALL) ||
