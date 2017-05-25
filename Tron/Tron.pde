@@ -131,7 +131,7 @@
       int ww = ((int) random(30) + 1) * 5;
       new Wall(w/2, 190, hh, ww).render();
     }
-    new PowerUp().populate();
+    new PowerUp(200, 200, 5, 5).populate();
   }
   
   // Cleans the grid and and resets grid cache

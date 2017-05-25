@@ -3,12 +3,20 @@ class Location {
   int x;
   int y;
   color c;
+  boolean isImage;
   LocationType type;
   
   Location(int x, int y, color c, LocationType type) {
     this.x = x;
     this.y = y;
     this.c = c;
+    this.type = type;
+  }
+  
+  Location (int x, int y, LocationType type, boolean b) {
+    this.x = x;
+    this.y = y;
+    this.isImage = b;
     this.type = type;
   }
   

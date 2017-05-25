@@ -11,6 +11,7 @@ class Player implements Comparable
   private char direction;
   private double speed;
   private boolean alive;
+  Random generator = new Random ();
   int lives = 3;
 
   public Player (String n, color c, char u, char l, char d, char r)
@@ -221,7 +222,12 @@ class Player implements Comparable
 
     if (type == LocationType.POWERUP)
     {
-      addSpeed(new PowerUp ().changeSpeed());
+      double change;
+      if (generator.nextBoolean())
+        change = 0.5;
+      else
+        change = -0.5;
+      addSpeed(change);
     }
 
     if ((type == LocationType.PLAYER || type == LocationType.WALL) ||
