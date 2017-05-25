@@ -1,4 +1,4 @@
-class TopBar {
+class ScoreBar {
   
   ArrayList<Player> players;
   ArrayList<String> messages;
@@ -6,7 +6,7 @@ class TopBar {
   int y;
   
   // Top bar of the game; can move this somewhere else later
-  TopBar(ArrayList<Player> players, int x, int y) {
+  ScoreBar(ArrayList<Player> players, int x, int y) {
   // FORMAT: <name> [***] : 
     this.players = players;
     this.x = x;
@@ -51,12 +51,9 @@ class TopBar {
       tempX += newX;
       count++;
     }
-    
-    
   }
   
   ArrayList<String> getMessages() {
     return this.messages;
   }
-  
 }

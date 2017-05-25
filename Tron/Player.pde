@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.util.Random;
 import java.util.ArrayList;
 
 class Player implements Comparable
@@ -11,13 +12,12 @@ class Player implements Comparable
   private char direction;
   private double speed;
   private boolean alive;
-  Random generator = new Random ();
+  Random generator = new Random();
   int lives = 3;
 
-  public Player (String n, color c, char u, char l, char d, char r)
+  //Changed the constructor so that it did not initialize its name or color
+  public Player (char u, char l, char d, char r)
   {
-    name = n;
-    col = c;
     upKey = u;
     downKey = d;
     leftKey = l;
@@ -27,6 +27,7 @@ class Player implements Comparable
     LEFT = l;
     RIGHT = r;
 
+    this.col = color(0,0,0);
     playerLocations = new ArrayList<Location>();
   }
 
@@ -127,7 +128,6 @@ class Player implements Comparable
       return;
     }
 
-    // Instantly crashes player despite output saying otherwise
     for (Location loc : line) {
       if (checkCrash (loc)) {
         gameOver();
@@ -147,7 +147,6 @@ class Player implements Comparable
     this.lives --;
     this.alive = false;
   }
-
 
   // (Re)spawns ths player in the arena and resets the relevant variables. Note that there is a very small chance of two players spawning on one another -- find a workaround for this later.
   void respawn(int x, int y) {
@@ -252,6 +251,10 @@ class Player implements Comparable
 
   void setSpeed(double speed) {
     this.speed = speed;
+  }
+
+  void setColor(color other){
+    this.col = other;
   }
 
   color getColor() {
