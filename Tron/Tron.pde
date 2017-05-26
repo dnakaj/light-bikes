@@ -117,9 +117,6 @@ void resetGame() {
   dir = "LEFT";
   this.players.add(new Player('i', 'j', 'k', 'l').setSpawn(spawns.get(dir)).setDirection(dir));
   //players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n'));
-
-  // [!!!] -> move this to wherever the players are made
-  //this.bar = new TopBar(players, 0, topHeight/2 + topHeight/4);
 }
 
 // Returns a sorted leaderboard of players (most lives left -> least)
@@ -262,6 +259,7 @@ void render() {
   if (doFullRender) { // On the first render it should draw the entire grid
     queue = grid;
     doFullRender = false;
+    this.bar = new ScoreBar(players, 0, topHeight/2 + topHeight/4);
   }
 
   for (Location loc : queue) {
@@ -271,6 +269,9 @@ void render() {
 
     rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
   }
+  
+  
+  //bar.render();
 
   gridCache = new ArrayList();
 
@@ -418,33 +419,33 @@ void startMenu() {
 void pickColor(Player player, ColorPicker picker) {
   // Going to get some nice errors here
   picker.setPlayer(player);
-  background(0,200,200);
+  background(0,200,200); // Don't really need this but it helps for debugging
   
   if (player.getColor() != color(0,0,0)) {
     TextBox nameInput = new TextBox(player);
-    nameInput.keyPressed();
+    if (keyPressed) {
+      nameInput.keyPressed();
+    }
     nameInput.draw();
   } else {
     picker.draw();
-    println("Key="+key);
     picker.keyPressed();
   }
   
-  key = '-';
+  key = 0;
 }
 
 // Player selection ColorPicker -- pick a name and color
 void createPlayer() {
   //this.state = GameState.WAITING;
   ColorPicker colorPicker = new ColorPicker();
-  int index = 0;
+  //int index = 0;
   
   for (Player player : players) {
-    if ((player.name() == null || player.name().length() < 10) ||  player.getColor() != color(0,0,0)) {
-       pickColor(players.get(index), colorPicker);
+    if (player.getColor() == color(0,0,0) || (player.hasName() == false)) {
+       pickColor(player, colorPicker);
        return;
     }
-    index++;
   }
   println("Updated game state");
   state = GameState.PLAY_GAME;

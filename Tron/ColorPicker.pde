@@ -27,10 +27,10 @@ class ColorPicker {
     if(key == '1'){
       currentPlayer.setColor(color(255,0,0));
     }
-    if(key == '2'){
+   if(key == '2'){
       currentPlayer.setColor(color(255,105,180));
     }
-    if(key == '3'){
+   if(key == '3'){
       currentPlayer.setColor(color(0,0,255));
     }
     if(key == '4'){

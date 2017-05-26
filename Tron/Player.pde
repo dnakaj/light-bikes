@@ -12,6 +12,7 @@ class Player implements Comparable
   private char direction;
   private double speed;
   private boolean alive;
+  private boolean hasName;
   Random generator = new Random();
   int lives = 3;
 
@@ -26,6 +27,8 @@ class Player implements Comparable
     DOWN = d;
     LEFT = l;
     RIGHT = r;
+    this.name = "";
+    this.hasName = false;
 
     this.col = color(0,0,0);
     playerLocations = new ArrayList<Location>();
@@ -271,6 +274,14 @@ class Player implements Comparable
 
   String name() {
     return this.name;
+  }
+  
+  void setHasName() {
+    this.hasName = true;
+  }
+  
+  boolean hasName() { // If player's name is complete
+    return this.hasName;
   }
 
   boolean isAlive() {

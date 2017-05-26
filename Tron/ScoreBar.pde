@@ -14,6 +14,7 @@ class ScoreBar {
   }
   
   void render() {
+     println("name="+players.get(0).name());
      stroke(color(50,50,50));
      fill(color(50,50,50));
      rect(0,0,getWidth(), getTopHeight());
@@ -42,9 +43,6 @@ class ScoreBar {
       //f = getFont(); // This actually uses the default font
       textFont(f, fontSize);
       fill(player.getColor());
-      //text("■", tempX, this.y);
-      //fill(0);
-      //tempX += 25;
       text(message, tempX, this.y);
       
       int newX = (int) textWidth(message) + 10;
