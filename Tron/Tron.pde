@@ -82,8 +82,8 @@ void setup() {
   directions = new ArrayList();
   directions.add("LEFT");
   directions.add("RIGHT");
-  directions.add("DOWN");
   directions.add("UP");
+  directions.add("DOWN");
   size(800, 720);
   resetGame();
 }
@@ -100,10 +100,7 @@ void resetGame() {
   this.resetGrid();
   this.doRespawn = false;
   this.runGame = true;
-
-  // Later on player 1 and player 2 will be taken from text box input (same for color)
-  this.players = new ArrayList();
-
+  
   // Size = 2 for now -- later can do a for loop given the amount of players
   // Four locations = (0 + WIDTH/
   spawns = new HashMap();
@@ -112,11 +109,16 @@ void resetGame() {
   spawns.put("DOWN", new Location(w/2, topHeight + 50)); // TOP SIDE
   spawns.put("UP", new Location(w/2, h - 50)); // BOTTOM SIDE
 
-  String dir = "RIGHT"; // Need to add players in reverse so that when they respawn, they move in the right direction
-  this.players.add(new Player('w', 'a', 's', 'd').setSpawn(spawns.get(dir)).setDirection(dir)); // One player mode breaks game
-  dir = "LEFT";
-  this.players.add(new Player('i', 'j', 'k', 'l').setSpawn(spawns.get(dir)).setDirection(dir));
-  //players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n'));
+  if (this.players.size() == 0) {
+    // Later on player 1 and player 2 will be taken from text box input (same for color)
+    this.players = new ArrayList();
+  
+    String dir = "RIGHT"; // Need to add players in reverse so that when they respawn, they move in the right direction
+    this.players.add(new Player('w', 'a', 's', 'd')); //.setSpawn(spawns.get(dir)).setDirection(dir)); // One player mode breaks game
+    dir = "LEFT";
+    this.players.add(new Player('i', 'j', 'k', 'l')); //.setSpawn(spawns.get(dir)).setDirection(dir));
+    //players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n'));
+  }
 }
 
 // Returns a sorted leaderboard of players (most lives left -> least)
@@ -269,9 +271,6 @@ void render() {
 
     rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
   }
-  
-  
-  //bar.render();
 
   gridCache = new ArrayList();
 
@@ -325,7 +324,7 @@ void playGame() {
     new java.util.Timer().schedule(
       new java.util.TimerTask() {
       @Override
-        public void run() {
+      public void run() {
         setup();
         this.cancel();
       }
@@ -351,6 +350,7 @@ void playGame() {
         Player player = players.get(i);
         if (player.lives() > 0) {
           String dir = directions.get(index++); // just assume # players <= # of directions
+          println("dir="+dir);
           player.respawn(spawns.get(dir));
           player.setDirection(dir);
           count++;
@@ -419,7 +419,7 @@ void startMenu() {
 void pickColor(Player player, ColorPicker picker) {
   // Going to get some nice errors here
   picker.setPlayer(player);
-  background(0,200,200); // Don't really need this but it helps for debugging
+  background(#E3E3E3);
   
   if (player.getColor() != color(0,0,0)) {
     TextBox nameInput = new TextBox(player);
@@ -449,6 +449,14 @@ void createPlayer() {
   }
   println("Updated game state");
   state = GameState.PLAY_GAME;
+  
+  // Spawn players
+  int index = 0;
+  for (int i=players.size()-1; i>=0; i--) {
+    String dir = directions.get(index); // Need to add players in reverse so that when they respawn, they move in the right direction
+    players.get(i).setSpawn(spawns.get(dir)).setDirection(dir);
+    index++;
+  }
   
   
   // Update game state only if all players have name and color
@@ -486,7 +494,7 @@ void createPlayer() {
 void draw() {
   switch(state) {
     case MENU:
-      background(0,200,0);
+      background(0,0,0);
       startMenu();
       break;
     case CREATE_PLAYER:

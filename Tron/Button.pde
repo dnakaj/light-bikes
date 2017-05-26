@@ -1,24 +1,42 @@
 class Button{
-  int x,y;
+  int x,y,w,h;
   String label;
   boolean overButton;
+  color col;
 
-  Button(int x, int y, String label){
+  Button(int x, int y, int w, int h, String label, color c){
     this.x = x;
     this.y = y;
-    this.label = label;}
+    this.w = w;
+    this.h = h;
+    this.label = label;
+    this.col = c;
+  }
 
   void draw(){
-    update(mouseX, mouseY);
-    fill(200);
-    if(overButton){
+    //update(mouseX, mouseY);
+    stroke(col);
+    fill(col);
+    /*if (overButton) {
+      
+      this.mousePressed();
       fill(255);
-    }
+    }*/
+    
+    rect(x,y, w,h);
     fill(0);
-    text(label, x, y + 100);}
-
+    textAlign(CENTER, CENTER);
+    
+    text(label, x+w/2, y + h/2);
+  }
+  
+  color getCol() {
+    return this.col; 
+  }
+  
+ /*
   boolean over(int s, int z){
-    if(mouseX >= s && mouseY >= z && mouseX <= s + textWidth(label) && mouseY <= z + 22){
+    if ((mouseX >= x && mouseX <= (x+w)) && (mouseY >= y && mouseY <= (y+h))) {
       return true;
     }
     else{
@@ -27,18 +45,10 @@ class Button{
   }
 
   void update(int s, int z){
-    if(over(this.x, this.y)){
-      overButton = true;}
-     else{
-       overButton = false;}
-    }
-
-  void mousePressed(){
-    if(overButton){
-      System.out.println("1");
-    }else{
-      System.out.println("-1");
-    }
-  }
-
+    if(over(s, z)){
+      overButton = true;
+     } else {
+       overButton = false;
+     }
+  }*/
 }

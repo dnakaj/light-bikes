@@ -2,6 +2,7 @@ class ScoreBar {
   
   ArrayList<Player> players;
   ArrayList<String> messages;
+  PFont f;
   int x;
   int y;
   
@@ -11,19 +12,19 @@ class ScoreBar {
     this.players = players;
     this.x = x;
     this.y = y;
+    this.f = createFont("HelveticaNeue-Thin", 1, true);
   }
   
   void render() {
-     println("name="+players.get(0).name());
      stroke(color(50,50,50));
      fill(color(50,50,50));
      rect(0,0,getWidth(), getTopHeight());
      int tempX = this.x;
-     int fontSize = 150 / (players.size() * 2);
+     int fontSize = 150 / (this.players.size() * 2);
      
      this.messages = new ArrayList();
      int count = 0;
-     for (Player player : players) {
+     for (Player player : this.players) { //<>// //<>//
     
       StringBuilder bar = new StringBuilder();
       // max lives = 3
@@ -39,8 +40,9 @@ class ScoreBar {
       String message = bar.toString();
       messages.add(message);
       
-      PFont f = createFont("HelveticaNeue-Thin", 1, true);
-      //f = getFont(); // This actually uses the default font
+      
+      
+      textAlign(LEFT);
       textFont(f, fontSize);
       fill(player.getColor());
       text(message, tempX, this.y);

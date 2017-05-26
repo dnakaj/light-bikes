@@ -15,13 +15,22 @@ class TextBox{
   void draw() {
       background(color(0,0,0));
       textFont(f);
+      
       fill(col);
       textAlign(CENTER);
       text(input, width/2, height/2);
+      /*String underscore = "_";
+      int charLength = 0;
+      if (input.length() > 0) {
+        charLength = (int) textWidth(input.substring(input.length()-1, input.length()));
+      }
+      text(underscore, width/2 + textWidth(input)/2 + charLength, height/2 + 30);*/
+      fill(#E3E3E3);
+      textSize(35);
+      text("Please enter a name between 1-10 characters", width/2, 50);
   }
 
   void keyPressed() {
-    println("k="+key);
     if (key == ENTER) {
       if (input.length() == 0) {
         println("Please enter at least one letter.");
@@ -34,19 +43,15 @@ class TextBox{
     } else if (key == BLANK_KEY) {
       return;
     } else if ((key == CODED || (int) key < 48) && key != BACKSPACE) { // valid char check
-      println("Please enter a valid character. key="+key+" code="+(int) key);
+      return;
+      //println("Please enter a valid character. key="+key+" code="+(int) key);
     } else if (input.length() > 0 && key == BACKSPACE) { // backspace delete
       
       player.setPlayerName(input.substring(0, input.length()-1));
     } else if (input.length() <= 10) { // add key
-      println();
       input += key;
-      println("input="+input);
       player.setPlayerName(player.name() + key);
-      //println(player.name());
       this.draw();
-    } else { // input is too long
-      println("Your input cannot be longer than 10 characters.");
     }
   }
 }
