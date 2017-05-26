@@ -224,6 +224,7 @@ class Player implements Comparable
 
     if (type == LocationType.POWERUP)
     {
+      println("Changed speed");
       double change;
       if (generator.nextBoolean())
         change = 0.5;
@@ -235,6 +236,7 @@ class Player implements Comparable
     if ((type == LocationType.PLAYER || type == LocationType.WALL) ||
         (next.getY() != last.getY() && (direction == LEFT || direction == RIGHT)) ||
         (next.getX() != last.getX() && (direction == UP || direction == DOWN))) { // This is to prevent bike from wrapping around edge of grid, because grid is a 1d array
+      //println("Die");
       return true;
     }
 

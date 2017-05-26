@@ -46,7 +46,7 @@ boolean doRespawn = false;
 boolean doFullRender = true;
 boolean doLeaderboard = false;
 boolean runGame = false;
-float framerate = 60;
+float framerate = 20;
 double respawnTimer = 3.0;
 double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
 //ColorPicker ColorPicker; // Start, Pick Color, game ColorPicker
@@ -101,7 +101,7 @@ void resetGame() {
   this.resetGrid();
   this.doRespawn = false;
   this.runGame = true;
-  
+
   // Size = 2 for now -- later can do a for loop given the amount of players
   // Four locations = (0 + WIDTH/
   spawns = new HashMap();
@@ -113,7 +113,7 @@ void resetGame() {
   if (this.players.size() == 0) {
     // Later on player 1 and player 2 will be taken from text box input (same for color)
     this.players = new ArrayList();
-  
+
     String dir = "RIGHT"; // Need to add players in reverse so that when they respawn, they move in the right direction
     this.players.add(new Player('w', 'a', 's', 'd')); //.setSpawn(spawns.get(dir)).setDirection(dir)); // One player mode breaks game
     dir = "LEFT";
@@ -152,17 +152,18 @@ void populateGrid() {
 
   //int hh = ((int) random(50) + 1) * 5;
   //int ww = ((int) random(30) + 1) * 5;
-  
+
   int fewestNumberOfPowerUps = 3;
   int greatesNumberOfPowerUps = 5;
   int wSize = 2;
   int hSize = 2;
-  
+
   powerUps = new ArrayList <PowerUp> ();
   createPowerUps (fewestNumberOfPowerUps, greatesNumberOfPowerUps, wSize, hSize);
-  for (PowerUp p : powerUps) {
-    p.populate();
-  }
+  //for (PowerUp p : powerUps) {
+  //  println ("DREW POWERUP");
+  //  p.populate();
+  //}
 
   //PowerUp (hh, ww, pixelSize*2, pixelSize*2).addToCache();
 }
@@ -284,15 +285,20 @@ void render() {
   }
 
   for (Location loc : queue) {
-    if (loc.isImage == true) {
-      continue;
-    } else {
+    if (loc.isImage == false) {
       color c = loc.getColor();
       stroke(c);
       fill(c);
 
       rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
+    } else {
+      loc.setType(LocationType.POWERUP);
     }
+  }
+  
+  for (PowerUp p : powerUps) {
+    //println ("DREW POWERUP");
+    p.populate();
   }
 
   gridCache = new ArrayList();
@@ -347,7 +353,7 @@ void playGame() {
     new java.util.Timer().schedule(
       new java.util.TimerTask() {
       @Override
-      public void run() {
+        public void run() {
         setup();
         this.cancel();
       }
@@ -443,8 +449,8 @@ void pickColor(Player player, ColorPicker picker) {
   // Going to get some nice errors here
   picker.setPlayer(player);
   background(#E3E3E3);
-  
-  if (player.getColor() != color(0,0,0)) {
+
+  if (player.getColor() != color(0, 0, 0)) {
     TextBox nameInput = new TextBox(player);
     if (keyPressed) {
       nameInput.keyPressed();
@@ -454,7 +460,7 @@ void pickColor(Player player, ColorPicker picker) {
     picker.draw();
     picker.keyPressed();
   }
-  
+
   key = 0;
 }
 
@@ -463,16 +469,16 @@ void createPlayer() {
   //this.state = GameState.WAITING;
   ColorPicker colorPicker = new ColorPicker();
   //int index = 0;
-  
+
   for (Player player : players) {
-    if (player.getColor() == color(0,0,0) || (player.hasName() == false)) {
-       pickColor(player, colorPicker);
-       return;
+    if (player.getColor() == color(0, 0, 0) || (player.hasName() == false)) {
+      pickColor(player, colorPicker);
+      return;
     }
   }
   println("Updated game state");
   state = GameState.PLAY_GAME;
-  
+
   // Spawn players
   int index = 0;
   for (int i=players.size()-1; i>=0; i--) {
@@ -480,7 +486,7 @@ void createPlayer() {
     players.get(i).setSpawn(spawns.get(dir)).setDirection(dir);
     index++;
   }
-  
+
   // Update game state only if all players have name and color
 
 
@@ -515,18 +521,18 @@ void createPlayer() {
 // Display's the relevant screen (relating to the game state)
 void draw() {
   switch(state) {
-    case MENU:
-      background(0,0,0);
-      startMenu();
-      break;
-    case CREATE_PLAYER:
-      //background(0,200,0);
-      frameRate(20);
-      createPlayer();
-      break;
-    case PLAY_GAME:
-      frameRate(framerate);
-      playGame();
-      break;
+  case MENU:
+    background(0, 0, 0);
+    startMenu();
+    break;
+  case CREATE_PLAYER:
+    //background(0,200,0);
+    frameRate(20);
+    createPlayer();
+    break;
+  case PLAY_GAME:
+    frameRate(framerate);
+    playGame();
+    break;
   }
 }
