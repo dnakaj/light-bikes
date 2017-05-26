@@ -50,6 +50,7 @@ float framerate = 60;
 double respawnTimer = 3.0;
 double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
 //ColorPicker ColorPicker; // Start, Pick Color, game ColorPicker
+ArrayList <PowerUp> powerUps;
 
 // Return dimensions of ColorPicker
 int getWidth() {
@@ -146,13 +147,31 @@ void populateGrid() {
     int ww = ((int) random(30) + 1) * 5;
     new Wall(w/2, 190, hh, ww).render();
   }
-  
+
   // Temp test
+
+  //int hh = ((int) random(50) + 1) * 5;
+  //int ww = ((int) random(30) + 1) * 5;
   
-  int hh = ((int) random(50) + 1) * 5;
-  int ww = ((int) random(30) + 1) * 5;
+  int fewestNumberOfPowerUps = 3;
+  int greatesNumberOfPowerUps = 5;
+  int wSize = 2;
+  int hSize = 2;
   
-  new PowerUp(hh, ww, pixelSize, pixelSize).populate();
+  powerUps = new ArrayList <PowerUp> ();
+  createPowerUps (fewestNumberOfPowerUps, greatesNumberOfPowerUps, wSize, hSize);
+  for (PowerUp p : powerUps) {
+    p.populate();
+  }
+
+  //PowerUp (hh, ww, pixelSize*2, pixelSize*2).addToCache();
+}
+
+void createPowerUps (int low, int high, int h, int w) {
+  int num = (int) (random (low, high + 1));
+  for (int i = 0; i < num; i++) {
+    powerUps.add (new PowerUp (((int) random(50) + 1) * 5, ((int) random(30) + 1) * 5, w*getPixelSize(), h*getPixelSize()));
+  }
 }
 
 // Cleans the grid and and resets grid cache
@@ -176,11 +195,11 @@ void resetGrid() {
   populateGrid();
   /*
     new Wall(50, h/2, 100, 15).render();
-
+   
    new Wall(w-50, h/2, 100, 15).render();
-
+   
    new Wall(w/2, topHeight+50, 15, 50).render();
-
+   
    new Wall(w/2, h-50, 15, 50).render();
    */
   this.gridCache = new ArrayList();
@@ -217,24 +236,24 @@ Location getLocation(int x, int y) {
     // Jump directly to index of location
 
     /* PLAN:
-
+     
      Original plan was to do: get (y-1) * getHeight() + x % pixelSize , but this returned numbers that were far too high (and threw index out of bounds exceptions). Thus, I returned to the planning
      phase, this time using a set of test coordinates:
-
+     
      [example coords]
-
+     
      x = 15
      y = 55
-
+     
      c=123 [the actual index as done the slow way]
-
+     
      55 - 50 = 5 [mistake was that I forgot to divide y - top by 5, and thus I was getting absurdly high values for my calculated "y" in grid
-
+     
      (width / 5) * ((y - top) / 5) + x / 5
-
+     
      New problem: Bike wraps around the edge when it collides [still ends the player's game, but this needs fixing]
      Solution: Just add an if statement checking if the Y changed without the player going up/down (see Player.pde -> checkCrash())
-
+     
      */
 
     int index = (width / pixelSize) * ((y - topHeight) / pixelSize) + x / pixelSize; // A faster way to get the index of a location
@@ -265,11 +284,15 @@ void render() {
   }
 
   for (Location loc : queue) {
-    color c = loc.getColor();
-    stroke(c);
-    fill(c);
+    if (loc.isImage == true) {
+      continue;
+    } else {
+      color c = loc.getColor();
+      stroke(c);
+      fill(c);
 
-    rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
+      rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
+    }
   }
 
   gridCache = new ArrayList();
@@ -278,7 +301,7 @@ void render() {
    color c = loc.getColor();
    stroke(c);
    fill(c);
-
+   
    rect(loc.getX(), loc.getY(), pixelSize, pixelSize);
    }*/
 }
@@ -406,7 +429,7 @@ void startMenu() {
   textAlign(CENTER);
   textFont(f);
   fill(color(134, 244, 250));
-  background(150,150,150);
+  background(150, 150, 150);
   text("TRON", width/2, height/2);
   textSize(34);
   text("Press ' ' to play", width/2, height/2 + 50);
@@ -458,36 +481,35 @@ void createPlayer() {
     index++;
   }
   
-  
   // Update game state only if all players have name and color
-  
- 
- /*
+
+
+  /*
   switch(currentPlayer) {
-    case p1:
-      player = players.get(0);
-      int process = 1;
-      
-      break;
-    case p2:
-      player = players.get(1);
-      //int process = 1;
-      if ( process == 1) {
-        selectColor.draw();
-        if (player.getColor() != null)
-          process++;
-      } else if (process == 2) {
-        TextBox name = new TextBox();
-        name.draw();
-        if (player.name() != null)
-          state = GameState.PLAY_GAME;
-      }
-      break;
-    default:
-      System.out.println("Something went wrong!");
-      exit();
-      break;
-  }*/
+   case p1:
+   player = players.get(0);
+   int process = 1;
+   
+   break;
+   case p2:
+   player = players.get(1);
+   //int process = 1;
+   if ( process == 1) {
+   selectColor.draw();
+   if (player.getColor() != null)
+   process++;
+   } else if (process == 2) {
+   TextBox name = new TextBox();
+   name.draw();
+   if (player.name() != null)
+   state = GameState.PLAY_GAME;
+   }
+   break;
+   default:
+   System.out.println("Something went wrong!");
+   exit();
+   break;
+   }*/
 }
 
 // Display's the relevant screen (relating to the game state)

@@ -3,7 +3,7 @@ class Location {
   int x;
   int y;
   color c;
-  boolean isImage;
+  boolean isImage = false;
   LocationType type;
   
   Location(int x, int y, color c, LocationType type) {
