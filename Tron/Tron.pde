@@ -94,7 +94,7 @@ void removePowerUp(PowerUp p) {
     Location replacement = new Location(loc.getX(), loc.getY());
     gridCache.add(replacement);
   }
-  
+
   powerUps.remove(p); 
   render();
 }
@@ -123,6 +123,7 @@ void resetGame() {
   this.resetGrid();
   this.doRespawn = false;
   this.runGame = true;
+  //this.state = GameState.MENU;
 
   // Size = 2 for now -- later can do a for loop given the amount of players
   // Four locations = (0 + WIDTH/
@@ -146,7 +147,9 @@ ArrayList<Player> getLeaderboard() {
 // Sets framerate to 2 and displays the game over ColorPicker (via call to draw)
 void gameOver() {
   doLeaderboard = true;
-  frameRate(2);
+  frameRate(10);
+  //this.state = GameState.MENU;
+  //If line 151 runs, it bypasses the gameover leaderboard screen for some reason
   redraw();
 }
 
@@ -157,10 +160,10 @@ void populateGrid() {
     if (chance <= 3) {
       int hh = ((int) random(50) + 1) * pixelSize;
       int ww = ((int) random(30) + 1) * pixelSize;
-      
+
       int x = ((int) random(((width/2)/pixelSize))) * pixelSize + width/4;
       int y = ((int) random((height-topHeight)/pixelSize)) * pixelSize + topHeight;
-      
+
       new Wall(w/2, 190, hh, ww).render();
     }
   }
@@ -169,7 +172,7 @@ void populateGrid() {
   //int ww = ((int) random(30) + 1) * 5;
 
   int fewestNumberOfPowerUps = 3;
-  int greatesNumberOfPowerUps = 5;
+  int greatesNumberOfPowerUps = 15;
   int wSize = 2;
   int hSize = 2;
 
@@ -189,8 +192,8 @@ void createPowerUps (int low, int high, int h, int w) {
   for (int i = 0; i < num; i++) {
     int x = ((int) random((width/pixelSize))) * pixelSize;
     int y = ((int) random((height-topHeight)/pixelSize)) * pixelSize + topHeight;
-    if (getLocation(x,y).getType() != LocationType.AIR) {
-      println("Spawning on a wall!"); 
+    if (getLocation(x, y).getType() != LocationType.AIR) {
+      println("Spawning on a wall!");
     }
     powerUps.add (new PowerUp (x, y, w, h));
   }
@@ -307,7 +310,7 @@ void render() {
   }
 
   for (PowerUp p : powerUps) { // Workaround for cache being overwritten
-    p.addToCache(); 
+    p.addToCache();
   }
 
   for (Location loc : queue) {
@@ -320,20 +323,20 @@ void render() {
     } else {
       Location l2 = getLocation(loc);
       if (l2 != null) {
-        l2.setType(LocationType.POWERUP); 
+        l2.setType(LocationType.POWERUP);
       }
     }
   }
 
   for (PowerUp p : powerUps) {
     /*println ("DREW POWERUP @ "+p.xC + ","+p.yC);
-    for (Location loc : p.getLocations()) {
-      color c = color(200,50,160);
-      stroke(c);
-      fill(c);
-
-      rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
-    }*/
+     for (Location loc : p.getLocations()) {
+     color c = color(200,50,160);
+     stroke(c);
+     fill(c);
+     
+     rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
+     }*/
     p.render();
   }
 
@@ -361,7 +364,6 @@ void keyPressed() {
         player.changeDirection(key);
       }
     }
-    
   }
 }
 
@@ -475,10 +477,10 @@ void playGame() {
 }
 
 void startMenu() {
-  
-  
-  
-  
+
+
+
+
   textAlign(CENTER);
   textFont(f);
   background(20, 20, 20);
@@ -488,13 +490,13 @@ void startMenu() {
   fill(color(109, 236, 255));
   textSize(34);
   text("Press [2-4] to Select a Game Size", width/2, height/2 + 50);
-  
+
   int playerSize = -1;
- 
+
   // Below code is from: https://stackoverflow.com/questions/628761/convert-a-character-digit-to-the-corresponding-integer-in-c
   if (keyPressed) {
     playerSize = key - '0';
-    
+
     if (playerSize >= 2 && playerSize <= 4) {
       // Later on player 1 and player 2 will be taken from text box input (same for color)
       this.players = new ArrayList();
@@ -503,15 +505,15 @@ void startMenu() {
       controls.add("arrows"); // player 2 
       controls.add("ijkl"); // player 3
       controls.add("gvbn"); // player 4
-      
+
       for (int i=0; i<playerSize; i++) {
         String controlString = controls.get(i);
         char[] controlArray = new char[4];
         if (controlString.equals("arrows")) {
-           controlArray[0] = UP;
-           controlArray[1] = LEFT;
-           controlArray[2] = DOWN;
-           controlArray[3] = RIGHT;
+          controlArray[0] = UP;
+          controlArray[1] = LEFT;
+          controlArray[2] = DOWN;
+          controlArray[3] = RIGHT;
         } else {
           for (int j=0; j<4; j++) { // Add each direction to the array using charAt
             controlArray[j] = controlString.charAt(j);
@@ -519,10 +521,9 @@ void startMenu() {
         }
         this.players.add(new Player(controlArray[0], controlArray[1], controlArray[2], controlArray[3])); // One player mode breaks game
       }
-      
+
       this.state = GameState.CREATE_PLAYER;
     }
-    
   }
 }
 
@@ -556,7 +557,7 @@ void createPlayer() {
       return;
     }
   }
-  
+
   state = GameState.PLAY_GAME;
 
   // Spawn players
