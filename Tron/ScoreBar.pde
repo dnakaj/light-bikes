@@ -24,7 +24,7 @@ class ScoreBar {
      
      this.messages = new ArrayList();
      int count = 0;
-     for (Player player : this.players) { //<>// //<>//
+     for (Player player : this.players) { //<>//
     
       StringBuilder bar = new StringBuilder();
       // max lives = 3

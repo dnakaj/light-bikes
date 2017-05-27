@@ -36,6 +36,14 @@ class Location {
     return this; 
   }
   
+  void setImage(boolean b) {
+    this.isImage = b;
+  }
+  
+  boolean isImage() {
+    return this.isImage; 
+  }
+  
   void setColor(color c) {
     this.c = c; 
   }

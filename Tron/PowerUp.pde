@@ -1,9 +1,9 @@
 import java.util.*;
+
 class PowerUp
 {
   Random generator = new Random ();
   ArrayList <Location> imageLocs;
-  ArrayList <PowerUp> powerUps;
   PImage img;
   int xC;
   int yC;
@@ -17,11 +17,14 @@ class PowerUp
     xLength = c;
     yLength = d;
     createList();
-    addToCache();
   }
   
-  void populate () {
-    image (img, xC, yC, xLength, yLength);
+  ArrayList<Location> getLocations() {
+    return this.imageLocs; 
+  }
+  
+  void render () {
+    image (img, xC, yC, xLength * getPixelSize(), yLength * getPixelSize());
   }
     
   void addToCache () {
@@ -38,10 +41,19 @@ class PowerUp
 
   void createList () {
     imageLocs = new ArrayList <Location> ();
-    for (int i = xC; i <= xLength + xC; i++) {
-      for (int j = yC; j <= yLength + yC; j++) {
-        Location l = new Location (i, j, LocationType.POWERUP, true);
-        imageLocs.add (l);
+    for (int i = xC; i < xLength * getPixelSize() + xC; i+=getPixelSize()) {
+      for (int j = yC; j < yLength * getPixelSize() + yC; j+=getPixelSize()) {
+        Location loc = new Location (i, j, LocationType.POWERUP, true);
+
+        imageLocs.add (loc);
+        getGridCache().add(loc);
+      
+      }
+    }
+    
+    for (Location l : getGridCache()) {
+      if (l.getType() == LocationType.POWERUP) {
+        //println("Powerup found!"); 
       }
     }
   }

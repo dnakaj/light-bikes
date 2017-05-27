@@ -46,7 +46,7 @@ boolean doRespawn = false;
 boolean doFullRender = true;
 boolean doLeaderboard = false;
 boolean runGame = false;
-float framerate = 20;
+float framerate = 45;
 double respawnTimer = 3.0;
 double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
 //ColorPicker ColorPicker; // Start, Pick Color, game ColorPicker
@@ -75,6 +75,28 @@ ArrayList<Player> getPlayers() { // Yes we don't actually need this getter, but 
 
 ArrayList<Location> getGridCache() {
   return gridCache;
+}
+
+// Get the powerup from the specified location
+PowerUp getPowerUp(Location loc) {
+  for (PowerUp pu : powerUps) {
+    for (Location l : pu.imageLocs) {
+      if (l.equals(loc)) {
+        return pu;
+      }
+    }
+  }
+  return null;
+}
+
+void removePowerUp(PowerUp p) {
+  for (Location loc : p.getLocations()) {
+    Location replacement = new Location(loc.getX(), loc.getY());
+    gridCache.add(replacement);
+  }
+  
+  powerUps.remove(p); 
+  render();
 }
 
 void setup() {
@@ -109,17 +131,6 @@ void resetGame() {
   spawns.put("LEFT", new Location(w-50, (h - topHeight) / 2)); // RIGHT SIDE
   spawns.put("DOWN", new Location(w/2, topHeight + 50)); // TOP SIDE
   spawns.put("UP", new Location(w/2, h - 50)); // BOTTOM SIDE
-
-  if (this.players.size() == 0) {
-    // Later on player 1 and player 2 will be taken from text box input (same for color)
-    this.players = new ArrayList();
-
-    String dir = "RIGHT"; // Need to add players in reverse so that when they respawn, they move in the right direction
-    this.players.add(new Player('w', 'a', 's', 'd')); //.setSpawn(spawns.get(dir)).setDirection(dir)); // One player mode breaks game
-    dir = "LEFT";
-    this.players.add(new Player('i', 'j', 'k', 'l')); //.setSpawn(spawns.get(dir)).setDirection(dir));
-    //players.add(new Player("Player 3", color(10, 120, 70), 'g', 'v', 'b', 'n'));
-  }
 }
 
 // Returns a sorted leaderboard of players (most lives left -> least)
@@ -141,14 +152,18 @@ void gameOver() {
 
 // Places walls and powerups on the grid
 void populateGrid() {
-  int chance = (int) random(10);
-  if (chance <= 3) {
-    int hh = ((int) random(50) + 1) * 5;
-    int ww = ((int) random(30) + 1) * 5;
-    new Wall(w/2, 190, hh, ww).render();
+  for (int i=0; i<5; i++) {
+    int chance = (int) random(10);
+    if (chance <= 3) {
+      int hh = ((int) random(50) + 1) * pixelSize;
+      int ww = ((int) random(30) + 1) * pixelSize;
+      
+      int x = ((int) random(((width/2)/pixelSize))) * pixelSize + width/4;
+      int y = ((int) random((height-topHeight)/pixelSize)) * pixelSize + topHeight;
+      
+      new Wall(w/2, 190, hh, ww).render();
+    }
   }
-
-  // Temp test
 
   //int hh = ((int) random(50) + 1) * 5;
   //int ww = ((int) random(30) + 1) * 5;
@@ -168,10 +183,16 @@ void populateGrid() {
   //PowerUp (hh, ww, pixelSize*2, pixelSize*2).addToCache();
 }
 
+// There is a very small chance a powerup will spawn offscreen in which case it might throw an exception
 void createPowerUps (int low, int high, int h, int w) {
   int num = (int) (random (low, high + 1));
   for (int i = 0; i < num; i++) {
-    powerUps.add (new PowerUp (((int) random(50) + 1) * 5, ((int) random(30) + 1) * 5, w*getPixelSize(), h*getPixelSize()));
+    int x = ((int) random((width/pixelSize))) * pixelSize;
+    int y = ((int) random((height-topHeight)/pixelSize)) * pixelSize + topHeight;
+    if (getLocation(x,y).getType() != LocationType.AIR) {
+      println("Spawning on a wall!"); 
+    }
+    powerUps.add (new PowerUp (x, y, w, h));
   }
 }
 
@@ -279,26 +300,41 @@ void render() {
   ArrayList<Location> queue = gridCache;
 
   if (doFullRender) { // On the first render it should draw the entire grid
+    background(255, 255, 255);
     queue = grid;
     doFullRender = false;
     this.bar = new ScoreBar(players, 0, topHeight/2 + topHeight/4);
   }
 
+  for (PowerUp p : powerUps) { // Workaround for cache being overwritten
+    p.addToCache(); 
+  }
+
   for (Location loc : queue) {
-    if (loc.isImage == false) {
+    if (loc.getType() != LocationType.POWERUP) {
       color c = loc.getColor();
       stroke(c);
       fill(c);
 
       rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
     } else {
-      loc.setType(LocationType.POWERUP);
+      Location l2 = getLocation(loc);
+      if (l2 != null) {
+        l2.setType(LocationType.POWERUP); 
+      }
     }
   }
-  
+
   for (PowerUp p : powerUps) {
-    //println ("DREW POWERUP");
-    p.populate();
+    /*println ("DREW POWERUP @ "+p.xC + ","+p.yC);
+    for (Location loc : p.getLocations()) {
+      color c = color(200,50,160);
+      stroke(c);
+      fill(c);
+
+      rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
+    }*/
+    p.render();
   }
 
   gridCache = new ArrayList();
@@ -315,9 +351,17 @@ void render() {
 // Moves respective player when a key is pressed
 void keyPressed() {
   for (Player player : players) {
-    if (player.isKey(key)) {
-      player.changeDirection(key);
+    // Need two if statements because key = char and keyCode = int
+    if (key == CODED) {
+      if (player.isKey(keyCode)) {
+        player.changeDirection(keyCode);
+      }
+    } else {
+      if (player.isKey(key)) {
+        player.changeDirection(key);
+      }
     }
+    
   }
 }
 
@@ -379,7 +423,6 @@ void playGame() {
         Player player = players.get(i);
         if (player.lives() > 0) {
           String dir = directions.get(index++); // just assume # players <= # of directions
-          println("dir="+dir);
           player.respawn(spawns.get(dir));
           player.setDirection(dir);
           count++;
@@ -432,15 +475,54 @@ void playGame() {
 }
 
 void startMenu() {
+  
+  
+  
+  
   textAlign(CENTER);
   textFont(f);
-  fill(color(134, 244, 250));
-  background(150, 150, 150);
-  text("TRON", width/2, height/2);
+  background(20, 20, 20);
+  PImage img = loadImage ("TRON.png");
+  image (img, 10, 100, width-20, 180);
+  //text("TRON", width/2, height/2);
+  fill(color(109, 236, 255));
   textSize(34);
-  text("Press ' ' to play", width/2, height/2 + 50);
-  if (key == ' ') { // Had to change key because it was logging the 1 as the key pressed to pick a color at the same time
-    state = GameState.CREATE_PLAYER;
+  text("Press [2-4] to Select a Game Size", width/2, height/2 + 50);
+  
+  int playerSize = -1;
+ 
+  // Below code is from: https://stackoverflow.com/questions/628761/convert-a-character-digit-to-the-corresponding-integer-in-c
+  if (keyPressed) {
+    playerSize = key - '0';
+    
+    if (playerSize >= 2 && playerSize <= 4) {
+      // Later on player 1 and player 2 will be taken from text box input (same for color)
+      this.players = new ArrayList();
+      ArrayList<String> controls = new ArrayList();
+      controls.add("wasd"); // player 1
+      controls.add("arrows"); // player 2 
+      controls.add("ijkl"); // player 3
+      controls.add("gvbn"); // player 4
+      
+      for (int i=0; i<playerSize; i++) {
+        String controlString = controls.get(i);
+        char[] controlArray = new char[4];
+        if (controlString.equals("arrows")) {
+           controlArray[0] = UP;
+           controlArray[1] = LEFT;
+           controlArray[2] = DOWN;
+           controlArray[3] = RIGHT;
+        } else {
+          for (int j=0; j<4; j++) { // Add each direction to the array using charAt
+            controlArray[j] = controlString.charAt(j);
+          }
+        }
+        this.players.add(new Player(controlArray[0], controlArray[1], controlArray[2], controlArray[3])); // One player mode breaks game
+      }
+      
+      this.state = GameState.CREATE_PLAYER;
+    }
+    
   }
 }
 
@@ -466,9 +548,7 @@ void pickColor(Player player, ColorPicker picker) {
 
 // Player selection ColorPicker -- pick a name and color
 void createPlayer() {
-  //this.state = GameState.WAITING;
   ColorPicker colorPicker = new ColorPicker();
-  //int index = 0;
 
   for (Player player : players) {
     if (player.getColor() == color(0, 0, 0) || (player.hasName() == false)) {
@@ -476,7 +556,7 @@ void createPlayer() {
       return;
     }
   }
-  println("Updated game state");
+  
   state = GameState.PLAY_GAME;
 
   // Spawn players

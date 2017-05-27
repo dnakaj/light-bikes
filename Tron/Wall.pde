@@ -16,10 +16,11 @@ class Wall {
     for (int xx = x; xx<x+w; xx += pixel) {
       for (int yy = y; yy<y+h; yy += pixel) {
         Location next = getLocation(xx, yy);
-        next.setColor(color(255,255,255));
-        next.setType(LocationType.WALL);
-         
-        getGridCache().add(next);
+        if (next != null) { // This way if a wall is spawned at the edge it's ok
+          next.setColor(color(255,255,255));
+          next.setType(LocationType.WALL);
+          getGridCache().add(next);
+        }
       }
     }
   }

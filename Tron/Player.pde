@@ -2,31 +2,32 @@ import java.awt.*;
 import java.util.Random;
 import java.util.ArrayList;
 
+final int DEFAULT_SPEED = 1;
+
 class Player implements Comparable
 {
-  private final char UP, DOWN, LEFT, RIGHT;
-  private final int upKey, downKey, leftKey, rightKey;
+  private final int UPKEY, DOWNKEY, LEFTKEY, RIGHTKEY; // The directional keys
+  //private final int up, down, left, right; // Ints to store the current direction
   private color col;
   private String name;
   private ArrayList<Location> playerLocations;
-  private char direction;
-  private double speed;
+  private int direction;
+  private int speed;
   private boolean alive;
   private boolean hasName;
+  private int speedTimer;
   Random generator = new Random();
   int lives = 3;
 
   //Changed the constructor so that it did not initialize its name or color
   public Player (char u, char l, char d, char r)
   {
-    upKey = u;
-    downKey = d;
-    leftKey = l;
-    rightKey = r;
-    UP = u;
-    DOWN = d;
-    LEFT = l;
-    RIGHT = r;
+    // For the arrow keys it's possible to pass in an ampersand and itll read as a direction, but not sure how to fix that bug
+    
+    UPKEY = (int) u;
+    DOWNKEY = (int) d;
+    LEFTKEY = (int) l;
+    RIGHTKEY = (int) r;
     this.name = "";
     this.hasName = false;
 
@@ -40,20 +41,20 @@ class Player implements Comparable
     return this;
   }
 
-  // Moves player in the specified direction //<>// //<>//
-  public Player setDirection(String direction) { //<>// //<>// //<>//
+  // Moves player in the specified direction //<>//
+  public Player setDirection(String direction) { //<>// //<>//
     switch (direction) {
       case ("UP"):
-        this.direction = UP;
+        this.direction = UPKEY;
         break;
       case ("DOWN"):
-        this.direction = DOWN;
+        this.direction = DOWNKEY;
         break;
       case ("LEFT"):
-        this.direction = LEFT;
+        this.direction = LEFTKEY;
         break;
-      case ("RIGHT"): //<>// //<>// //<>//
-        this.direction = RIGHT; //<>// //<>// //<>//
+      case ("RIGHT"): //<>// //<>//
+        this.direction = RIGHTKEY; //<>// //<>//
         break;
     }
 
@@ -66,7 +67,7 @@ class Player implements Comparable
     if (to == null) { return new ArrayList(); } // In the future need a way to get all the points up to the border so that it draws a complete line.
 
     ArrayList<Location> result = new ArrayList();
-    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>// //<>// //<>//
+    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>// //<>//
     int deltaY = (from.getY() - to.getY())/getPixelSize();
 
     // Ensures that the deltaX and deltaY are valid (might not need this because we already know the location is valid)
@@ -98,28 +99,34 @@ class Player implements Comparable
   public void move()
   {
     if (!alive) { return; }
+    
+    if (speedTimer > 0) {
+      speedTimer --;
+    } else if (speedTimer == 0 && speed != DEFAULT_SPEED) {
+      speed = DEFAULT_SPEED;
+    }
 
     Location last = playerLocations.get(playerLocations.size()-1);
     Location next = null;
 
     // For the speed, iterate x blocks between last and next
 
-    if (direction == UP)
+    if (direction == UPKEY)
     {
       next = getLocation(last.getX(), (int)(last.getY() - speed * getPixelSize()));
     }
 
-    else if (direction == DOWN)
+    else if (direction == DOWNKEY)
     {
       next = getLocation(last.getX(), (int)(last.getY() + speed * getPixelSize()));
     }
 
-    else if (direction == LEFT)
+    else if (direction == LEFTKEY)
     {
       next = getLocation((int)(last.getX() - speed * getPixelSize()), last.getY());
     }
 
-    else if (direction == RIGHT)
+    else if (direction == RIGHTKEY)
     {
       next = getLocation((int)(last.getX() + speed * getPixelSize()), last.getY());
     }
@@ -136,11 +143,13 @@ class Player implements Comparable
         gameOver();
         return;
       } else {
-        loc.setType(LocationType.PLAYER);
-        loc.setColor(this.col);
-
-        playerLocations.add(loc);
-        getGridCache().add(loc);
+        // Former bug: For some reason when a player eats a powerup a hole appears in the line where the powerup was.
+        Location l2 = getLocation(loc.getX(), loc.getY());
+        l2.setType(LocationType.PLAYER);
+        l2.setColor(this.col);
+    
+        playerLocations.add(l2);
+        getGridCache().add(l2);
       }
     }
   }
@@ -155,9 +164,9 @@ class Player implements Comparable
   void respawn(int x, int y) {
     if (x % getPixelSize() != 0 || y % getPixelSize() != 0) { throw new IllegalArgumentException(); }
 
-    this.direction = RIGHT;
+    this.direction = RIGHTKEY;
     this.alive = true;
-    this.speed = 1;
+    this.speed = DEFAULT_SPEED;
     this.playerLocations = new ArrayList();
     this.playerLocations.add(new Location(x, y, this.col, LocationType.PLAYER));
   }
@@ -190,24 +199,22 @@ class Player implements Comparable
 
 
   // Checks if the input char is one of the player's direction keys
-  boolean isKey(char dir) {
-    return (dir == UP || dir == DOWN || dir == RIGHT || dir == LEFT);
+  boolean isKey(int dir) {
+    return (dir == UPKEY || dir == DOWNKEY || dir == RIGHTKEY || dir == LEFTKEY);
   }
 
-
   // Switches the player's direction
-  public void changeDirection (char dir)
-  {
-    if ((dir == UP || dir == DOWN || dir == RIGHT || dir == LEFT) && validMove(dir))
-    {
-      direction = dir;
-    }
+  public void changeDirection (int dir) {
+     if ((dir == UPKEY || dir == DOWNKEY || dir == RIGHTKEY || dir == LEFTKEY) && validMove(dir))
+      {
+        direction = dir;
+      }
   }
 
 
   // Checks if player can move in that direction. Prevents player from moving in the direction opposite of their current direction
-  private boolean validMove(char dir) {
-    return !(dir == UP && direction == DOWN || dir == DOWN && direction == UP || dir == LEFT && direction == RIGHT || dir == RIGHT && direction == LEFT);
+  private boolean validMove(int dir) {
+    return !(dir == UPKEY && direction == DOWNKEY || dir == DOWNKEY && direction == UPKEY || dir == LEFTKEY && direction == RIGHTKEY || dir == RIGHTKEY && direction == LEFTKEY);
   }
 
 
@@ -221,28 +228,28 @@ class Player implements Comparable
     Location last = playerLocations.get(playerLocations.size()-1);
 
     LocationType type = next.getType();
-
-    if (type == LocationType.POWERUP)
-    {
-      println("Changed speed");
-      double change;
-      if (generator.nextBoolean())
-        change = 0.5;
-      else
-        change = -0.5;
-      addSpeed(change);
+    //println(getLocation(next).getType()+" : "+next);
+    if (type == LocationType.POWERUP) {
+      PowerUp p = getPowerUp(next);
+      
+      if (p != null) { // Basically a workaround for the NPE
+        addSpeed(1); //<>//
+        speedTimer += (int) frameRate * 2;
+        removePowerUp(p);
+      }
+      
+      return false;
     }
 
     if ((type == LocationType.PLAYER || type == LocationType.WALL) ||
-        (next.getY() != last.getY() && (direction == LEFT || direction == RIGHT)) ||
-        (next.getX() != last.getX() && (direction == UP || direction == DOWN))) { // This is to prevent bike from wrapping around edge of grid, because grid is a 1d array
-      //println("Die");
+        (next.getY() != last.getY() && (direction == LEFTKEY || direction == RIGHTKEY)) ||
+        (next.getX() != last.getX() && (direction == UPKEY || direction == DOWNKEY))) { // This is to prevent bike from wrapping around edge of grid, because grid is a 1d array
       return true;
     }
 
     return false;
   }
-
+ 
   // CompareTo method for generating final leaderboard
   int compareTo(Object player) {
     return ((Player) this).lives - ((Player) player).lives;
@@ -250,11 +257,11 @@ class Player implements Comparable
 
 
   // Getter / Setter methods -- should make these stylistcally the same (either get/set, or just the variable [eg. setSpeed() vs speed()]
-  void addSpeed(double speed) {
+  void addSpeed(int speed) {
     this.speed += speed;
   }
 
-  void setSpeed(double speed) {
+  void setSpeed(int speed) {
     this.speed = speed;
   }
 

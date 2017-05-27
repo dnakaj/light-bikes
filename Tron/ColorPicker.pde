@@ -13,10 +13,10 @@ class ColorPicker {
     int spacing = width / 50;
     int buttonWidth = 80;
     int buttonHeight = 40;
-    red = new Button(width/2-200, height/2, buttonWidth, buttonHeight, "1", color(#EA5056));
-    pink = new Button(width/2-100, height/2, buttonWidth, buttonHeight, "2", color(#F28BED));
-    blue  = new Button(width/2, height/2, buttonWidth, buttonHeight, "3", color(#24ADF0));
-    yellow = new Button(width/2+100, height/2, buttonWidth, buttonHeight, "4", color(#F0E924));
+    red = new Button(width/2-200, height/2, buttonWidth, buttonHeight, "a", color(#EA5056));
+    pink = new Button(width/2-100, height/2, buttonWidth, buttonHeight, "b", color(#F28BED));
+    blue  = new Button(width/2, height/2, buttonWidth, buttonHeight, "c", color(#24ADF0));
+    yellow = new Button(width/2+100, height/2, buttonWidth, buttonHeight, "d", color(#F0E924));
   }
   
   // Sets the current player for the colorpicker
@@ -25,16 +25,16 @@ class ColorPicker {
   }
 
   void keyPressed() {
-    if(key == '1'){
+    if(key == 'a'){
       currentPlayer.setColor(red.getCol());
     }
-   if(key == '2'){
+   if(key == 'b'){
       currentPlayer.setColor(pink.getCol());
     }
-   if(key == '3'){
+   if(key == 'c'){
       currentPlayer.setColor(blue.getCol());
     }
-    if(key == '4'){
+    if(key == 'd'){
       currentPlayer.setColor(yellow.getCol());
     }
   }
