@@ -46,7 +46,7 @@ boolean doRespawn = false;
 boolean doFullRender = true;
 boolean doLeaderboard = false;
 boolean runGame = false;
-float framerate = 45;
+float framerate = 40;
 double respawnTimer = 3.0;
 double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
 //ColorPicker ColorPicker; // Start, Pick Color, game ColorPicker
