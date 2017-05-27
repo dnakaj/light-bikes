@@ -1,3 +1,5 @@
+import processing.sound.*;
+
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.*;
@@ -46,11 +48,18 @@ boolean doRespawn = false;
 boolean doFullRender = true;
 boolean doLeaderboard = false;
 boolean runGame = false;
-float framerate = 40;
+float framerate = 30;
 double respawnTimer = 3.0;
 double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
 //ColorPicker ColorPicker; // Start, Pick Color, game ColorPicker
 ArrayList <PowerUp> powerUps;
+SoundFile readyToPlay;
+SoundFile powerUp;
+SoundFile gameOver;
+SoundFile preGame;
+SoundFile inGame;
+SoundFile postGame;
+SoundFX sfx;
 
 // Return dimensions of ColorPicker
 int getWidth() {
@@ -100,6 +109,13 @@ void removePowerUp(PowerUp p) {
 }
 
 void setup() {
+  sfx = new SoundFX ();
+  readyToPlay = new SoundFile (this, "ReadyToPlay.mp3");
+  powerUp = new SoundFile (this, "PowerUp.wav");
+  gameOver = new SoundFile (this, "GameOver.mp3");
+  preGame = new SoundFile (this, "PreGame.mp3");
+  inGame = new SoundFile (this, "InGame.mp3");
+  postGame = new SoundFile (this, "PostGame.mp3");
   f = createFont("HelveticaNeue-Light", 60, true);
   //println(join(PFont.list(), "\n"));
   directions = new ArrayList();
@@ -119,7 +135,7 @@ void resetGame() {
   if (width % pixelSize != 0 || height % pixelSize != 0) {
     throw new IllegalArgumentException();
   }
-
+  
   this.resetGrid();
   this.doRespawn = false;
   this.runGame = true;
@@ -146,11 +162,12 @@ ArrayList<Player> getLeaderboard() {
 
 // Sets framerate to 2 and displays the game over ColorPicker (via call to draw)
 void gameOver() {
+  sfx.endGame();
   doLeaderboard = true;
   frameRate(10);
   //this.state = GameState.MENU;
   //If line 151 runs, it bypasses the gameover leaderboard screen for some reason
-  redraw();
+  //redraw();
 }
 
 // Places walls and powerups on the grid
@@ -432,6 +449,7 @@ void playGame() {
       }
 
       if (count <= 1) {
+        //sfx.endGame();
         gameOver();
         return;
       }
@@ -477,10 +495,6 @@ void playGame() {
 }
 
 void startMenu() {
-
-
-
-
   textAlign(CENTER);
   textFont(f);
   background(20, 20, 20);
@@ -557,7 +571,8 @@ void createPlayer() {
       return;
     }
   }
-
+  sfx.moveToGame();
+  
   state = GameState.PLAY_GAME;
 
   // Spawn players

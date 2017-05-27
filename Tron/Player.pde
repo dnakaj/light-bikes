@@ -1,4 +1,4 @@
-import java.awt.*;
+import java.awt.*; //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -18,12 +18,13 @@ class Player implements Comparable
   private int speedTimer;
   Random generator = new Random();
   int lives = 3;
+  SoundFX sfx = new SoundFX ();
 
   //Changed the constructor so that it did not initialize its name or color
   public Player (char u, char l, char d, char r)
   {
     // For the arrow keys it's possible to pass in an ampersand and itll read as a direction, but not sure how to fix that bug
-    
+
     UPKEY = (int) u;
     DOWNKEY = (int) d;
     LEFTKEY = (int) l;
@@ -31,7 +32,7 @@ class Player implements Comparable
     this.name = "";
     this.hasName = false;
 
-    this.col = color(0,0,0);
+    this.col = color(0, 0, 0);
     playerLocations = new ArrayList<Location>();
   }
 
@@ -41,21 +42,21 @@ class Player implements Comparable
     return this;
   }
 
-  // Moves player in the specified direction //<>//
-  public Player setDirection(String direction) { //<>// //<>//
+  // Moves player in the specified direction
+  public Player setDirection(String direction) { //<>//
     switch (direction) {
       case ("UP"):
-        this.direction = UPKEY;
-        break;
+      this.direction = UPKEY;
+      break;
       case ("DOWN"):
-        this.direction = DOWNKEY;
-        break;
+      this.direction = DOWNKEY;
+      break;
       case ("LEFT"):
-        this.direction = LEFTKEY;
-        break;
-      case ("RIGHT"): //<>// //<>//
-        this.direction = RIGHTKEY; //<>// //<>//
-        break;
+      this.direction = LEFTKEY;
+      break;
+      case ("RIGHT"): //<>//
+      this.direction = RIGHTKEY; //<>//
+      break;
     }
 
     return this;
@@ -64,10 +65,12 @@ class Player implements Comparable
   // Gets the line of locations between two points (used for when speed > 1)
   ArrayList<Location> getLine(Location from, Location to) {
     // Add delta X and add delta Y (if vertical, delta x = 0, if horizontal, delta y = 0)
-    if (to == null) { return new ArrayList(); } // In the future need a way to get all the points up to the border so that it draws a complete line.
+    if (to == null) { 
+      return new ArrayList();
+    } // In the future need a way to get all the points up to the border so that it draws a complete line.
 
     ArrayList<Location> result = new ArrayList();
-    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>// //<>//
+    int deltaX = (from.getX() - to.getX())/getPixelSize(); // Amount of "pixels" between two the locations (x-wise) if delta = 10, 2 pixels so increase by 5 each time //<>//
     int deltaY = (from.getY() - to.getY())/getPixelSize();
 
     // Ensures that the deltaX and deltaY are valid (might not need this because we already know the location is valid)
@@ -98,8 +101,10 @@ class Player implements Comparable
   // Moves the bike forward x amount
   public void move()
   {
-    if (!alive) { return; }
-    
+    if (!alive) { 
+      return;
+    }
+
     if (speedTimer > 0) {
       speedTimer --;
     } else if (speedTimer == 0 && speed != DEFAULT_SPEED) {
@@ -114,19 +119,13 @@ class Player implements Comparable
     if (direction == UPKEY)
     {
       next = getLocation(last.getX(), (int)(last.getY() - speed * getPixelSize()));
-    }
-
-    else if (direction == DOWNKEY)
+    } else if (direction == DOWNKEY)
     {
       next = getLocation(last.getX(), (int)(last.getY() + speed * getPixelSize()));
-    }
-
-    else if (direction == LEFTKEY)
+    } else if (direction == LEFTKEY)
     {
       next = getLocation((int)(last.getX() - speed * getPixelSize()), last.getY());
-    }
-
-    else if (direction == RIGHTKEY)
+    } else if (direction == RIGHTKEY)
     {
       next = getLocation((int)(last.getX() + speed * getPixelSize()), last.getY());
     }
@@ -147,7 +146,7 @@ class Player implements Comparable
         Location l2 = getLocation(loc.getX(), loc.getY());
         l2.setType(LocationType.PLAYER);
         l2.setColor(this.col);
-    
+
         playerLocations.add(l2);
         getGridCache().add(l2);
       }
@@ -162,7 +161,9 @@ class Player implements Comparable
 
   // (Re)spawns ths player in the arena and resets the relevant variables. Note that there is a very small chance of two players spawning on one another -- find a workaround for this later.
   void respawn(int x, int y) {
-    if (x % getPixelSize() != 0 || y % getPixelSize() != 0) { throw new IllegalArgumentException(); }
+    if (x % getPixelSize() != 0 || y % getPixelSize() != 0) { 
+      throw new IllegalArgumentException();
+    }
 
     this.direction = RIGHTKEY;
     this.alive = true;
@@ -176,26 +177,26 @@ class Player implements Comparable
   }
 
   /* An old method for randomly spawning the player in the map
-  void respawn() {
-
-    int w = getWidth();
-    int h = getHeight();
-
-    int x = ((int) random(w/getPixelSize())) * getPixelSize();
-    if (x > w/2) { x = w/2; } // Ensures player starts on left side of screen
-
-    int y = ((int) random(h/getPixelSize())) * getPixelSize();
-    if (y < getTopHeight()) { y = topHeight + (int) random(h/getPixelSize() - topHeight); }
-    int count = 0;
-    for (Player player : players) {
-      count += getPixelSize();
-      if (player.name().equals(this.name) && player.getColor() == this.col) {
-         y = getTopHeight() + count * getPixelSize();
-      }
-    }
-
-    respawn(x, y);
-  }*/
+   void respawn() {
+   
+   int w = getWidth();
+   int h = getHeight();
+   
+   int x = ((int) random(w/getPixelSize())) * getPixelSize();
+   if (x > w/2) { x = w/2; } // Ensures player starts on left side of screen
+   
+   int y = ((int) random(h/getPixelSize())) * getPixelSize();
+   if (y < getTopHeight()) { y = topHeight + (int) random(h/getPixelSize() - topHeight); }
+   int count = 0;
+   for (Player player : players) {
+   count += getPixelSize();
+   if (player.name().equals(this.name) && player.getColor() == this.col) {
+   y = getTopHeight() + count * getPixelSize();
+   }
+   }
+   
+   respawn(x, y);
+   }*/
 
 
   // Checks if the input char is one of the player's direction keys
@@ -205,10 +206,10 @@ class Player implements Comparable
 
   // Switches the player's direction
   public void changeDirection (int dir) {
-     if ((dir == UPKEY || dir == DOWNKEY || dir == RIGHTKEY || dir == LEFTKEY) && validMove(dir))
-      {
-        direction = dir;
-      }
+    if ((dir == UPKEY || dir == DOWNKEY || dir == RIGHTKEY || dir == LEFTKEY) && validMove(dir))
+    {
+      direction = dir;
+    }
   }
 
 
@@ -231,25 +232,26 @@ class Player implements Comparable
     //println(getLocation(next).getType()+" : "+next);
     if (type == LocationType.POWERUP) {
       PowerUp p = getPowerUp(next);
-      
+
       if (p != null) { // Basically a workaround for the NPE
-        addSpeed(1); //<>//
+        sfx.gainedPowerUp();
+        addSpeed(1);
         speedTimer += (int) frameRate * 2;
         removePowerUp(p);
       }
-      
+
       return false;
     }
 
     if ((type == LocationType.PLAYER || type == LocationType.WALL) ||
-        (next.getY() != last.getY() && (direction == LEFTKEY || direction == RIGHTKEY)) ||
-        (next.getX() != last.getX() && (direction == UPKEY || direction == DOWNKEY))) { // This is to prevent bike from wrapping around edge of grid, because grid is a 1d array
+      (next.getY() != last.getY() && (direction == LEFTKEY || direction == RIGHTKEY)) ||
+      (next.getX() != last.getX() && (direction == UPKEY || direction == DOWNKEY))) { // This is to prevent bike from wrapping around edge of grid, because grid is a 1d array
       return true;
     }
 
     return false;
   }
- 
+
   // CompareTo method for generating final leaderboard
   int compareTo(Object player) {
     return ((Player) this).lives - ((Player) player).lives;
@@ -265,7 +267,7 @@ class Player implements Comparable
     this.speed = speed;
   }
 
-  void setColor(color other){
+  void setColor(color other) {
     this.col = other;
   }
 
@@ -278,17 +280,17 @@ class Player implements Comparable
   }
 
   void setPlayerName(String name) {
-    this.name = name; 
+    this.name = name;
   }
 
   String name() {
     return this.name;
   }
-  
+
   void setHasName() {
     this.hasName = true;
   }
-  
+
   boolean hasName() { // If player's name is complete
     return this.hasName;
   }
