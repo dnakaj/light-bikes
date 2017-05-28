@@ -48,11 +48,14 @@ boolean doRespawn = false;
 boolean doFullRender = true;
 boolean doLeaderboard = false;
 boolean runGame = false;
+boolean ENABLE_SOUND = false;
 float framerate = 30;
 double respawnTimer = 3.0;
 double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
-//ColorPicker ColorPicker; // Start, Pick Color, game ColorPicker
 ArrayList <PowerUp> powerUps;
+
+// SOUND [begin]
+
 SoundFile readyToPlay;
 SoundFile powerUp;
 SoundFile gameOver;
@@ -60,6 +63,8 @@ SoundFile preGame;
 SoundFile inGame;
 SoundFile postGame;
 SoundFX sfx;
+
+// SOUND [end]
 
 // Return dimensions of ColorPicker
 int getWidth() {
@@ -109,13 +114,18 @@ void removePowerUp(PowerUp p) {
 }
 
 void setup() {
-  sfx = new SoundFX ();
-  readyToPlay = new SoundFile (this, "ReadyToPlay.mp3");
-  powerUp = new SoundFile (this, "PowerUp.wav");
-  gameOver = new SoundFile (this, "GameOver.mp3");
-  preGame = new SoundFile (this, "PreGame.mp3");
-  inGame = new SoundFile (this, "InGame.mp3");
-  postGame = new SoundFile (this, "PostGame.mp3");
+  // SOUND [begin]
+  if (ENABLE_SOUND) {
+    sfx = new SoundFX ();
+    readyToPlay = new SoundFile (this, "ReadyToPlay.mp3");
+    powerUp = new SoundFile (this, "PowerUp.wav");
+    gameOver = new SoundFile (this, "GameOver.mp3");
+    preGame = new SoundFile (this, "PreGame.mp3");
+    inGame = new SoundFile (this, "InGame.mp3");
+    postGame = new SoundFile (this, "PostGame.mp3");
+  }
+  // SOUND [end]
+  
   f = createFont("HelveticaNeue-Light", 60, true);
   //println(join(PFont.list(), "\n"));
   directions = new ArrayList();
