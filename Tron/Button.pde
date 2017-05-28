@@ -15,14 +15,8 @@ class Button{
   }
 
   void draw(){
-    //update(mouseX, mouseY);
     stroke(col);   
     fill(col);
-    /*if (overButton) {
-      
-      this.mousePressed();   //Originally used for mousePressed, when the cursor was over the Button, it would highlight
-      fill(255);
-    }*/
     
     rect(x,y, w,h);
     fill(0);
@@ -34,23 +28,4 @@ class Button{
   color getCol() {      //Returns the color of the object
     return this.col; 
   }
-  
- /*
-  //Originally used for mousePressed, when the cursor was over the Button, it would highlight
-  boolean over(int s, int z){
-    if ((mouseX >= x && mouseX <= (x+w)) && (mouseY >= y && mouseY <= (y+h))) {
-      return true;
-    } 
-    else{
-      return false;
-    }
-  }
-
-  void update(int s, int z){
-    if(over(s, z)){
-      overButton = true;
-     } else {
-       overButton = false;
-     }
-  }*/
 }

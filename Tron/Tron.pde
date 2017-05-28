@@ -4,28 +4,18 @@ import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.*;
 
-/*
-    Helvetica
- Helvetica-Bold
- Helvetica-BoldOblique
- Helvetica-Light
- Helvetica-LightOblique
- Helvetica-Oblique
- HelveticaNeue
- HelveticaNeue-Bold
- HelveticaNeue-BoldItalic
- HelveticaNeue-CondensedBlack
- HelveticaNeue-CondensedBold
- HelveticaNeue-Italic
- HelveticaNeue-Light
- HelveticaNeue-LightItalic
- HelveticaNeue-Medium
- HelveticaNeue-MediumItalic
- HelveticaNeue-Thin
- HelveticaNeue-ThinItalic
- HelveticaNeue-UltraLight
- HelveticaNeue-UltraLightItalic
- */
+// Game created by Dan, Kabir, and Josh
+
+
+/**********************************************************************************************************
+ * IMPORTANT INFORMATION!                                                                                 *
+ *                                                                                                        *
+ * ENABLE_SOUND toggles the game sound effects. It is enabled by default, however may be set to false if  *
+ * the sound effects cause the game to crash (the sound library breaks on certain computers).             *
+ **********************************************************************************************************/
+
+boolean ENABLE_SOUND = false;
+
 
 ArrayList<Player> players = new ArrayList();
 ArrayList<String> directions = new ArrayList();
@@ -38,17 +28,12 @@ int w = 0;
 int h = 0;
 final int topHeight = 50;
 final int pixelSize = 5;
-/*final int startMenu = 0;
- final int stateCreatePlayer = 1;
- final int statePlayGame = 2;
- final int stateExit = 3;*/
 GameState state = GameState.MENU;
 ScoreBar bar = null;
 boolean doRespawn = false;
 boolean doFullRender = true;
 boolean doLeaderboard = false;
 boolean runGame = false;
-boolean ENABLE_SOUND = false;
 float framerate = 30;
 double respawnTimer = 3.0;
 double respawnTimerBackup = respawnTimer; // Need a better way to save this variable
@@ -67,31 +52,6 @@ SoundFX sfx;
 
 // SOUND [end]
 
-// Return dimensions of ColorPicker
-int getWidth() {
-  return w;
-}
-int getHeight() {
-  return h;
-}
-int getTopHeight() {
-  return topHeight;
-}
-int getPixelSize() {
-  return pixelSize;
-}
-PFont getFont() {
-  return f;
-}
-
-ArrayList<Player> getPlayers() { // Yes we don't actually need this getter, but it's good practice
-  return players;
-}
-
-ArrayList<Location> getGridCache() {
-  return gridCache;
-}
-
 // Get the powerup from the specified location
 PowerUp getPowerUp(Location loc) {
   for (PowerUp pu : powerUps) {
@@ -104,6 +64,7 @@ PowerUp getPowerUp(Location loc) {
   return null;
 }
 
+// Removes the 2x2 grid of a powerup (both from the screen and from the list)
 void removePowerUp(PowerUp p) {
   for (Location loc : p.getLocations()) {
     Location replacement = new Location(loc.getX(), loc.getY());
@@ -114,6 +75,7 @@ void removePowerUp(PowerUp p) {
   render();
 }
 
+// Sets up the game, defines the screen size, and sets the font
 void setup() {
   // SOUND [begin]
   if (ENABLE_SOUND) {
@@ -124,9 +86,10 @@ void setup() {
     preGame = new SoundFile (this, "PreGame.mp3");
     inGame = new SoundFile (this, "InGame.mp3");
     postGame = new SoundFile (this, "PostGame.mp3");
+    sfx.preGame();
   }
   // SOUND [end]
-  
+
   f = createFont("HelveticaNeue-Light", 60, true);
   //println(join(PFont.list(), "\n"));
   directions = new ArrayList();
@@ -135,7 +98,6 @@ void setup() {
   directions.add("UP");
   directions.add("DOWN");
   size(800, 720);
-  sfx.preGame();
   resetGame();
 }
 
@@ -147,14 +109,11 @@ void resetGame() {
   if (width % pixelSize != 0 || height % pixelSize != 0) {
     throw new IllegalArgumentException();
   }
-  
+
   this.resetGrid();
   this.doRespawn = false;
   this.runGame = true;
-  //this.state = GameState.MENU;
 
-  // Size = 2 for now -- later can do a for loop given the amount of players
-  // Four locations = (0 + WIDTH/
   spawns = new HashMap();
   spawns.put("RIGHT", new Location(50, (h - topHeight) / 2)); // LEFT SIDE
   spawns.put("LEFT", new Location(w-50, (h - topHeight) / 2)); // RIGHT SIDE
@@ -172,9 +131,11 @@ ArrayList<Player> getLeaderboard() {
   return result;
 }
 
-// Sets framerate to 2 and displays the game over ColorPicker (via call to draw)
+// Sets framerate to 2 and displays the game over screen (via call to draw)
 void gameOver() {
-  sfx.endGame();
+  if (ENABLE_SOUND) {
+    sfx.endGame();
+  }
   doLeaderboard = true;
   frameRate(10);
   //this.state = GameState.MENU;
@@ -197,34 +158,24 @@ void populateGrid() {
     }
   }
 
-  //int hh = ((int) random(50) + 1) * 5;
-  //int ww = ((int) random(30) + 1) * 5;
-
   int fewestNumberOfPowerUps = 3;
-  int greatesNumberOfPowerUps = 15;
+  int greatesNumberOfPowerUps = 6;
   int wSize = 2;
   int hSize = 2;
 
   powerUps = new ArrayList <PowerUp> ();
   createPowerUps (fewestNumberOfPowerUps, greatesNumberOfPowerUps, wSize, hSize);
-  //for (PowerUp p : powerUps) {
-  //  println ("DREW POWERUP");
-  //  p.populate();
-  //}
-
-  //PowerUp (hh, ww, pixelSize*2, pixelSize*2).addToCache();
 }
 
-// There is a very small chance a powerup will spawn offscreen in which case it might throw an exception
+// Spawns a random amount of powerups on the screen
 void createPowerUps (int low, int high, int h, int w) {
   int num = (int) (random (low, high + 1));
   for (int i = 0; i < num; i++) {
     int x = ((int) random((width/pixelSize))) * pixelSize;
     int y = ((int) random((height-topHeight)/pixelSize)) * pixelSize + topHeight;
-    if (getLocation(x, y).getType() != LocationType.AIR) {
-      println("Spawning on a wall!");
+    if (getLocation(x, y).getType() == LocationType.AIR) {
+      powerUps.add (new PowerUp (x, y, w, h));
     }
-    powerUps.add (new PowerUp (x, y, w, h));
   }
 }
 
@@ -236,39 +187,19 @@ void resetGrid() {
   for (int y=topHeight; y<h; y+=pixelSize) {
     for (int x=0; x<w; x+=pixelSize) {
       grid.add(new Location(x, y));
-      /*if (black) {
-       grid.add(new Location(x, y, color(0,0,0), LocationType.AIR));
-       black ^= true;
-       } else {
-       grid.add(new Location(x, y, color(255,255,255), LocationType.AIR));
-       black ^= true;
-       }*/
     }
-    //black ^= true;
   }
   populateGrid();
-  /*
-    new Wall(50, h/2, 100, 15).render();
-   
-   new Wall(w-50, h/2, 100, 15).render();
-   
-   new Wall(w/2, topHeight+50, 15, 50).render();
-   
-   new Wall(w/2, h-50, 15, 50).render();
-   */
+
   this.gridCache = new ArrayList();
   this.doFullRender = true; // Why does this variable save as true in this method, but not when placed into resetGame()?
 }
 
-ArrayList<Location> getGrid() {
-  return this.grid;
-}
-
+// Returns the location associated with a given x and y coordinate (or null if nonexistant)
 Location getLocation(Location loc) {
   return getLocation(loc.getX(), loc.getY());
 }
 
-// Returns the location associated with a given x and y coordinate (or null if nonexistant)
 Location getLocation(int x, int y) {
   /* The initial, much slower way of fetching a location from the grid
    println();
@@ -321,7 +252,7 @@ Location getLocation(int x, int y) {
   return null;
 }
 
-// Draws the current game ColorPicker (and only draws new locations as opposed to drawing every location every time)
+// Draws the current game screen (and only draws new locations as opposed to drawing every location every time)
 void render() {
 
   /*
@@ -358,26 +289,10 @@ void render() {
   }
 
   for (PowerUp p : powerUps) {
-    /*println ("DREW POWERUP @ "+p.xC + ","+p.yC);
-     for (Location loc : p.getLocations()) {
-     color c = color(200,50,160);
-     stroke(c);
-     fill(c);
-     
-     rect(loc.getX(), loc.getY(), pixelSize-1, pixelSize-1);
-     }*/
     p.render();
   }
 
   gridCache = new ArrayList();
-
-  /*for (Location loc : grid) {
-   color c = loc.getColor();
-   stroke(c);
-   fill(c);
-   
-   rect(loc.getX(), loc.getY(), pixelSize, pixelSize);
-   }*/
 }
 
 // Moves respective player when a key is pressed
@@ -396,7 +311,7 @@ void keyPressed() {
   }
 }
 
-// Draws the game ColorPicker (grid if it's in game, respawn ColorPicker, and game over ColorPicker)
+// Draws the game screen (grid/players if it's in game, respawn screen, and game over screen)
 void playGame() {
   if (!runGame) {
     return;
@@ -415,16 +330,16 @@ void playGame() {
     textAlign(CENTER);
     textFont(f2);
     fill(color(134, 244, 250));
-    text(gameOver, width/2, height/2);
+    text(gameOver, width/2, height/2 - 50);
 
     textFont(f);
-    text(leaderboard, width/2, height/2 + 15); // Make text size a variable
+    text(leaderboard, width/2, height/2 -35); // Make text size a variable
     textAlign(BASELINE);
     this.doLeaderboard = false;
     this.runGame = false;
     noLoop();
 
-    // Need a way to keep this text on the ColorPicker without it getting overwritten by setup();
+    // Need a way to keep this text on the screen without it getting overwritten by setup();
     // Source for below code: https://stackoverflow.com/questions/2258066/java-run-a-function-after-a-specific-number-of-seconds
     new java.util.Timer().schedule(
       new java.util.TimerTask() {
@@ -462,7 +377,9 @@ void playGame() {
       }
 
       if (count <= 1) {
-        sfx.endGame();
+        if (ENABLE_SOUND) {
+          sfx.endGame();
+        }
         gameOver();
         return;
       }
@@ -478,11 +395,9 @@ void playGame() {
     // Draw the current ColorPicker
     for (Player player : players) {
       if (player.isAlive()) {
-        player.move(); // This will end up with a problem where if two players run into
-        // eachother at same time, the player at index 0 with die first.
+        player.move();
       } else {
         dead++;
-        // NEED SOME SORT OF "FREEZE FRAME" when everyone dies before switching to timer.
         if (player.lives() == 0) {
           eliminated++;
         }
@@ -490,9 +405,8 @@ void playGame() {
     }
 
     if (players.size() - dead <= 1) {
-      //delay(1000); // Pause frame for 1 second
       if (eliminated >= players.size() - 1) { // Can probably merge the two calls to setup()
-        // RETURN TO MENU / PLAY AGAIN ColorPicker
+        // RETURN TO MENU / PLAY AGAIN screen
         gameOver();
         return;
       }
@@ -507,6 +421,7 @@ void playGame() {
   }
 }
 
+// Displays the game's start menu, which lets player enter a number 2-4 to pick how many players to run the game with
 void startMenu() {
   textAlign(CENTER);
   textFont(f);
@@ -546,7 +461,7 @@ void startMenu() {
             controlArray[j] = controlString.charAt(j);
           }
         }
-        this.players.add(new Player(controlArray[0], controlArray[1], controlArray[2], controlArray[3])); // One player mode breaks game
+        this.players.add(new Player(controlArray[0], controlArray[1], controlArray[2], controlArray[3]).setControlKeys(controlString)); // One player mode breaks game
       }
 
       this.state = GameState.CREATE_PLAYER;
@@ -556,7 +471,6 @@ void startMenu() {
 
 // Displays color picker screen until player has picked a color
 void pickColor(Player player, ColorPicker picker) {
-  // Going to get some nice errors here
   picker.setPlayer(player);
   background(#E3E3E3);
 
@@ -574,19 +488,21 @@ void pickColor(Player player, ColorPicker picker) {
   key = 0;
 }
 
-// Player selection ColorPicker -- pick a name and color
+// Player selection screen -- pick a name and color
 void createPlayer() {
   ColorPicker colorPicker = new ColorPicker();
-  
+
   for (Player player : players) {
     if (player.getColor() == color(0, 0, 0) || (player.hasName() == false)) {
       pickColor(player, colorPicker);
       return;
     }
   }
-  
-  sfx.moveToGame();
-  
+
+  if (ENABLE_SOUND) {
+    sfx.moveToGame();
+  }
+
   state = GameState.PLAY_GAME;
 
   // Spawn players
@@ -598,34 +514,6 @@ void createPlayer() {
   }
 
   // Update game state only if all players have name and color
-
-
-  /*
-  switch(currentPlayer) {
-   case p1:
-   player = players.get(0);
-   int process = 1;
-   
-   break;
-   case p2:
-   player = players.get(1);
-   //int process = 1;
-   if ( process == 1) {
-   selectColor.draw();
-   if (player.getColor() != null)
-   process++;
-   } else if (process == 2) {
-   TextBox name = new TextBox();
-   name.draw();
-   if (player.name() != null)
-   state = GameState.PLAY_GAME;
-   }
-   break;
-   default:
-   System.out.println("Something went wrong!");
-   exit();
-   break;
-   }*/
 }
 
 // Display's the relevant screen (relating to the game state)
@@ -636,7 +524,6 @@ void draw() {
     startMenu();
     break;
   case CREATE_PLAYER:
-    //background(0,200,0);
     frameRate(20);
     createPlayer();
     break;
@@ -645,4 +532,33 @@ void draw() {
     playGame();
     break;
   }
+}
+
+// Various getters/setters
+int getWidth() {
+  return w;
+}
+int getHeight() {
+  return h;
+}
+int getTopHeight() {
+  return topHeight;
+}
+int getPixelSize() {
+  return pixelSize;
+}
+PFont getFont() {
+  return f;
+}
+
+ArrayList<Player> getPlayers() { // Yes we don't actually need this getter, but it's good practice
+  return players;
+}
+
+ArrayList<Location> getGridCache() {
+  return gridCache;
+}
+
+ArrayList<Location> getGrid() {
+  return this.grid;
 }

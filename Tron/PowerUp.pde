@@ -50,11 +50,5 @@ class PowerUp
       
       }
     }
-    
-    for (Location l : getGridCache()) {
-      if (l.getType() == LocationType.POWERUP) {
-        //println("Powerup found!"); 
-      }
-    }
   }
 }

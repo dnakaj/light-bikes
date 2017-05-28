@@ -28,6 +28,7 @@ class TextBox{
       fill(#E3E3E3);
       textSize(35);
       text("Please enter a name between 1-10 characters", width/2, 50);
+      text("Your Controls: "+player.getControlKeys(), width/2, 90);
   }
 
   void keyPressed() {

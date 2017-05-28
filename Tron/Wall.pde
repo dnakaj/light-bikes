@@ -11,6 +11,7 @@ class Wall {
     this.w = w;
   }
   
+  // Draws the wall on the game screen (at x,y with width w and height h)
   void render() {
     int pixel = getPixelSize();
     for (int xx = x; xx<x+w; xx += pixel) {

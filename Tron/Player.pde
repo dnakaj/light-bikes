@@ -1,4 +1,4 @@
-import java.awt.*; //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+import java.awt.*; //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -16,8 +16,10 @@ class Player implements Comparable
   private boolean alive;
   private boolean hasName;
   private int speedTimer;
+  private String displayKeys;
   Random generator = new Random();
   int lives = 3;
+  
   SoundFX sfx = new SoundFX ();
 
   //Changed the constructor so that it did not initialize its name or color
@@ -36,14 +38,24 @@ class Player implements Comparable
     playerLocations = new ArrayList<Location>();
   }
 
-
   public Player setSpawn(Location loc) {
+    
     this.respawn(loc);
     return this;
   }
+   //<>//
+  // Used for the player creation screen where it displays that person's controls
+  public Player setControlKeys(String keys) {
+    this.displayKeys = keys;
+    return this;
+  }
+  
+  public String getControlKeys() {
+    return this.displayKeys; 
+  }
 
-  // Moves player in the specified direction
-  public Player setDirection(String direction) { //<>//
+  // Moves player in the specified direction //<>//
+  public Player setDirection(String direction) { //<>// //<>//
     switch (direction) {
       case ("UP"):
       this.direction = UPKEY;
@@ -58,7 +70,7 @@ class Player implements Comparable
       this.direction = RIGHTKEY; //<>//
       break;
     }
-
+ //<>//
     return this;
   }
 
@@ -176,28 +188,6 @@ class Player implements Comparable
     respawn(loc.getX(), loc.getY());
   }
 
-  /* An old method for randomly spawning the player in the map
-   void respawn() {
-   
-   int w = getWidth();
-   int h = getHeight();
-   
-   int x = ((int) random(w/getPixelSize())) * getPixelSize();
-   if (x > w/2) { x = w/2; } // Ensures player starts on left side of screen
-   
-   int y = ((int) random(h/getPixelSize())) * getPixelSize();
-   if (y < getTopHeight()) { y = topHeight + (int) random(h/getPixelSize() - topHeight); }
-   int count = 0;
-   for (Player player : players) {
-   count += getPixelSize();
-   if (player.name().equals(this.name) && player.getColor() == this.col) {
-   y = getTopHeight() + count * getPixelSize();
-   }
-   }
-   
-   respawn(x, y);
-   }*/
-
 
   // Checks if the input char is one of the player's direction keys
   boolean isKey(int dir) {
@@ -234,7 +224,9 @@ class Player implements Comparable
       PowerUp p = getPowerUp(next);
 
       if (p != null) { // Basically a workaround for the NPE
-        sfx.gainedPowerUp();
+        if (ENABLE_SOUND) {
+          sfx.gainedPowerUp();
+        }
         addSpeed(1);
         speedTimer += (int) frameRate * 2;
         removePowerUp(p);

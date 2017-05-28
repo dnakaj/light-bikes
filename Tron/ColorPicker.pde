@@ -38,12 +38,12 @@ class ColorPicker {
       currentPlayer.setColor(yellow.getCol());
     }
   }
-
+  
+  
   void draw() {
       if (currentPlayer == null) {
         throw new NullPointerException(); 
       }
-      //background(0,0,0);
       textAlign(CENTER);
       textSize(60);
       text("Please select your color", width/2, 50);

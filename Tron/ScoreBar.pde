@@ -1,4 +1,4 @@
-class ScoreBar { //<>//
+class ScoreBar { //<>// //<>//
 
   ArrayList<Player> players;
   ArrayList<String> messages;
@@ -15,6 +15,7 @@ class ScoreBar { //<>//
     this.f = createFont("HelveticaNeue-Thin", 1, true);
   }
 
+  // Draws the scorebar which appears at the top of the screen when the game isrun
   void render() {
     stroke(color(50, 50, 50));
     fill(color(50, 50, 50));
@@ -40,8 +41,6 @@ class ScoreBar { //<>//
       String message = bar.toString();
       messages.add(message);
 
-
-
       textAlign(LEFT);
       textFont(f, fontSize);
       fill(player.getColor());
@@ -51,9 +50,5 @@ class ScoreBar { //<>//
       tempX += newX;
       count++;
     }
-  }
-
-  ArrayList<String> getMessages() {
-    return this.messages;
   }
 }
