@@ -57,6 +57,7 @@ SoundFile readyToPlay;
 SoundFile powerUp;
 SoundFile gameOver;
 SoundFile preGame;
+SoundFile theGrid;
 SoundFile inGame;
 SoundFile postGame;
 SoundFX sfx;
@@ -111,8 +112,11 @@ void removePowerUp(PowerUp p) {
 void setup() {
   sfx = new SoundFX ();
   readyToPlay = new SoundFile (this, "ReadyToPlay.mp3");
+  readyToPlay.rate (0.725); //This changes the rate because this file has a sample rate of 32 kHz versus the regular 44.1
   powerUp = new SoundFile (this, "PowerUp.wav");
   gameOver = new SoundFile (this, "GameOver.mp3");
+  gameOver.rate (0.725); //This changes the rate because this file has a sample rate of 32 kHz versus the regular 44.1
+  theGrid = new SoundFile (this, "TheGrid.mp3");
   preGame = new SoundFile (this, "PreGame.mp3");
   inGame = new SoundFile (this, "InGame.mp3");
   postGame = new SoundFile (this, "PostGame.mp3");
@@ -124,6 +128,7 @@ void setup() {
   directions.add("UP");
   directions.add("DOWN");
   size(800, 720);
+  sfx.preGame();
   resetGame();
 }
 
@@ -410,6 +415,7 @@ void playGame() {
     textAlign(BASELINE);
     this.doLeaderboard = false;
     this.runGame = false;
+    noLoop();
 
     // Need a way to keep this text on the ColorPicker without it getting overwritten by setup();
     // Source for below code: https://stackoverflow.com/questions/2258066/java-run-a-function-after-a-specific-number-of-seconds
@@ -449,7 +455,7 @@ void playGame() {
       }
 
       if (count <= 1) {
-        //sfx.endGame();
+        sfx.endGame();
         gameOver();
         return;
       }
@@ -564,13 +570,14 @@ void pickColor(Player player, ColorPicker picker) {
 // Player selection ColorPicker -- pick a name and color
 void createPlayer() {
   ColorPicker colorPicker = new ColorPicker();
-
+  
   for (Player player : players) {
     if (player.getColor() == color(0, 0, 0) || (player.hasName() == false)) {
       pickColor(player, colorPicker);
       return;
     }
   }
+  
   sfx.moveToGame();
   
   state = GameState.PLAY_GAME;
