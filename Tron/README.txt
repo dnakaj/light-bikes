@@ -1,7 +1,7 @@
-Group members: Dan, Kabir, and Josh
+﻿Group members: Dan, Kabir, and Josh
 a. Total time spent on project:
     ~20 hours combined (but probably more)
-b.
+b. Project Summary
     Our project is the multi-player game Tron. The goal of the game is to cause the other "light cycle(s)"
     to crash, which happens when a cycle either runs into itself/another player, a wall, or runs into the
     edge of the map. Each cycle leaves a trail of color behind it, and the trail will also cause a player
@@ -9,11 +9,12 @@ b.
     to survive. At the end of the game, a final scoreboard is displayed, showing how many lives the winning
     player had remaining.
 
-
     There is also a wall which randomly spawns at the start of a match, in addition to powerups, which provide a speed boost
     (but they can provide too much speed as well, which can prove to be fatal).
 
     Lastly, we have a menu screen where each player selects a color and then a display name.
+
+    NOTE: The Processing Sound library was used to add sound effects to the game
 
     Additionally, we have in game sound effects.
 
@@ -50,11 +51,11 @@ d. Who did what
             track all locations where the cycle had been, a method to pickup the powerups
         * PowerUp.pde
         --> Spawns a powerup on the grid and draws it as an image. Provides a speed boost to the player when picked up
-        * SoundFX.pde
-        —-> Has methods that play and stop in game sound at various times
+	* SoundFX.pde
+	--> Adds sound effects to the game 
     - Josh:
         * Tron.pde
-        --> Methods to draw the main menu screen / cycle through screens for picking color/name/starting game
+        --> Methods to draw the main menu screen / cycle through screens for picking color/name/starting game, and add support for 2-4 players.
         * ColorPicker.pde
         --> Method to display a bunch of buttons with colors, when a button is hit it will set the player's color
         * Button.pde
@@ -62,14 +63,22 @@ d. Who did what
         * TextBox.pde
         --> Made my base text box code into a usable interface
 e. Major difficulties encountered
+    DEVELOPMENT:
+    - For a while, the cycles would simply spawn and then the game would end (without ever appearing on screen). This
+      was due to the fact that I had swapped a few lines of code, and thus it would draw the cycles and then overwrite them
+      on the next line.
+    - We were initially going to go with a larger color pallete and allow the player to mouse over each button, clicking to select,
+      the color, but there were too many glitches (visually and functionally) and thus we decided to go with the current
+      implementation instead.
+    - Processing ran into a weird error where it claimed non of the classes (Wall, Player, etc) existed. This error was
+      fixed by messing around with the file names and then setting them back to the original names.
     BUGS:
     - Game doesn't restart (it's supposed to) after the game over screen
-    - PowerUps aren't picked up when the player runs over them
     - Name selection screen sometimes glitches and enters a character twice
     - Controls sometimes freeze up when the round restarts
     - The sound sometimes gets limited by the computer speaker for some reason
     UN-IMPLEMENTED FEATURES:
     - An AI cycle so that one person can play by themselves
     - More powerups (rewind the game, jump over/through a wall/cycle)
-    - More game options available from the menu screen such as # players, speed, # of walls, size of walls,
+    - More game options available from the menu screen such as starting speed, # of walls, size of walls,
       frequency of walls, which power-ups can spawn.
