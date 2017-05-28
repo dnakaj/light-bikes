@@ -4,6 +4,7 @@ class Button{
   boolean overButton;
   color col;
 
+  //Creates a new Button
   Button(int x, int y, int w, int h, String label, color c){
     this.x = x;
     this.y = y;
@@ -19,7 +20,7 @@ class Button{
     fill(col);
     /*if (overButton) {
       
-      this.mousePressed();
+      this.mousePressed();   //Originally used for mousePressed, when the cursor was over the Button, it would highlight
       fill(255);
     }*/
     
@@ -30,15 +31,16 @@ class Button{
     text(label, x+w/2, y + h/2);
   }
   
-  color getCol() {
+  color getCol() {      //Returns the color of the object
     return this.col; 
   }
   
  /*
+  //Originally used for mousePressed, when the cursor was over the Button, it would highlight
   boolean over(int s, int z){
     if ((mouseX >= x && mouseX <= (x+w)) && (mouseY >= y && mouseY <= (y+h))) {
       return true;
-    }
+    } 
     else{
       return false;
     }
