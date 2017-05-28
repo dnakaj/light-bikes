@@ -246,6 +246,7 @@ class Player implements Comparable
     if ((type == LocationType.PLAYER || type == LocationType.WALL) ||
       (next.getY() != last.getY() && (direction == LEFTKEY || direction == RIGHTKEY)) ||
       (next.getX() != last.getX() && (direction == UPKEY || direction == DOWNKEY))) { // This is to prevent bike from wrapping around edge of grid, because grid is a 1d array
+      //sfx.lostALife(); //Commented out because you hear a shrill sound at the end for some reason
       return true;
     }
 

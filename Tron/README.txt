@@ -1,4 +1,4 @@
-Group members: Dan, Kabir, and Josh
+﻿Group members: Dan, Kabir, and Josh
 a. Total time spent on project:
     ~20 hours combined (but probably more)
 b. Project Summary
@@ -16,15 +16,17 @@ b. Project Summary
 
     NOTE: The Processing Sound library was used to add sound effects to the game
 
+    Additionally, we have in game sound effects.
+
 c. How to run / play Tron
     - To run the program hit the "play" button in Processing (with Tron.pde opened).
     * For the left hand player, the controls are:    W
                                                   A  S  D
-    * For the right hand player, the controls are:    I
-                                                   J  K  L
+    * For the right hand player, the controls are:    up arrow, down arrow, left arrow, right arrow
 
-    * Hit spacebar to start the game, enter the corresponding number 1-4 to pick a color, and type on
-      the keyboard to enter a name [10 characters max].
+    * For players 3 and 4 (if chosen) the control are: I, J, K, L and G, V, B, N
+
+    * Follow on-screen instructions. When you are done with a step in the menu, hit ‘Enter’.
 
 d. Who did what
     - Dan:
@@ -43,14 +45,14 @@ d. Who did what
         --> Wrote base code to take keyboard input and convert it into a string (for getting the player's name)
     - Kabir:
         * Tron.pde
-        --> Added methods to spawn PowerUps/Walls on the grid
+        --> Added methods to spawn PowerUps/Walls on the grid and implement sound effects
         * Player.pde
         --> Wrote almost all of the player-related methods (except for the two methods I wrote) including getting the player to
             track all locations where the cycle had been, a method to pickup the powerups
         * PowerUp.pde
         --> Spawns a powerup on the grid and draws it as an image. Provides a speed boost to the player when picked up
 	* SoundFX.pde
-	--> Adds sound effects to the game
+	--> Adds sound effects to the game 
     - Josh:
         * Tron.pde
         --> Methods to draw the main menu screen / cycle through screens for picking color/name/starting game, and add support for 2-4 players.
@@ -74,6 +76,7 @@ e. Major difficulties encountered
     - Game doesn't restart (it's supposed to) after the game over screen
     - Name selection screen sometimes glitches and enters a character twice
     - Controls sometimes freeze up when the round restarts
+    - The sound sometimes gets limited by the computer speaker for some reason
     UN-IMPLEMENTED FEATURES:
     - An AI cycle so that one person can play by themselves
     - More powerups (rewind the game, jump over/through a wall/cycle)
