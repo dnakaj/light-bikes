@@ -15,15 +15,17 @@ b.
 
     Lastly, we have a menu screen where each player selects a color and then a display name.
 
+    Additionally, we have in game sound effects.
+
 c. How to run / play Tron
     - To run the program hit the "play" button in Processing (with Tron.pde opened).
     * For the left hand player, the controls are:    W
                                                   A  S  D
-    * For the right hand player, the controls are:    I
-                                                   J  K  L
+    * For the right hand player, the controls are:    up arrow, down arrow, left arrow, right arrow
 
-    * Hit spacebar to start the game, enter the corresponding number 1-4 to pick a color, and type on
-      the keyboard to enter a name [10 characters max].
+    * For players 3 and 4 (if chosen) the control are: I, J, K, L and G, V, B, N
+
+    * Follow on-screen instructions. When you are done with a step in the menu, hit ‘Enter’.
 
 d. Who did what
     - Dan:
@@ -42,12 +44,14 @@ d. Who did what
         --> Wrote base code to take keyboard input and convert it into a string (for getting the player's name)
     - Kabir:
         * Tron.pde
-        --> Added methods to spawn PowerUps/Walls on the grid
+        --> Added methods to spawn PowerUps/Walls on the grid and implement sound effects
         * Player.pde
         --> Wrote almost all of the player-related methods (except for the two methods I wrote) including getting the player to
             track all locations where the cycle had been, a method to pickup the powerups
         * PowerUp.pde
         --> Spawns a powerup on the grid and draws it as an image. Provides a speed boost to the player when picked up
+        * SoundFX.pde
+        —-> Has methods that play and stop in game sound at various times
     - Josh:
         * Tron.pde
         --> Methods to draw the main menu screen / cycle through screens for picking color/name/starting game
@@ -63,6 +67,7 @@ e. Major difficulties encountered
     - PowerUps aren't picked up when the player runs over them
     - Name selection screen sometimes glitches and enters a character twice
     - Controls sometimes freeze up when the round restarts
+    - The sound sometimes gets limited by the computer speaker for some reason
     UN-IMPLEMENTED FEATURES:
     - An AI cycle so that one person can play by themselves
     - More powerups (rewind the game, jump over/through a wall/cycle)
