@@ -19,14 +19,17 @@ class PowerUp
     createList();
   }
   
+  //returns the list to locations of the power up image
   ArrayList<Location> getLocations() {
     return this.imageLocs; 
   }
   
+  //draws or renders the powerup on the grid
   void render () {
     image (img, xC, yC, xLength * getPixelSize(), yLength * getPixelSize());
   }
-    
+  
+  //adds each location in imageLocs to the gridCache
   void addToCache () {
     ArrayList <Location> gridCache = getGridCache();
     for (Location l : imageLocs) {
@@ -34,11 +37,13 @@ class PowerUp
     }
   }
   
+  //creates and returns a list of PowerUps
   ArrayList <PowerUp> getPowerUps (int low, int high, int h, int w) {
     createPowerUps (low, high, h , w);
     return powerUps;
   }
 
+  //creates a list of PowerUps
   void createList () {
     imageLocs = new ArrayList <Location> ();
     for (int i = xC; i < xLength * getPixelSize() + xC; i+=getPixelSize()) {
