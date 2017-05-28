@@ -16,7 +16,7 @@ class Button{
 
   void draw(){
     //update(mouseX, mouseY);
-    stroke(col);
+    stroke(col);   
     fill(col);
     /*if (overButton) {
       
@@ -28,7 +28,7 @@ class Button{
     fill(0);
     textAlign(CENTER, CENTER);
     
-    text(label, x+w/2, y + h/2);
+    text(label, x+w/2, y + h/2);    //Creates a button in a retangle, filled with the color from the constructor
   }
   
   color getCol() {      //Returns the color of the object
