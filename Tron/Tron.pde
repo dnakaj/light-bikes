@@ -14,7 +14,7 @@ import java.util.*;
  * the sound effects cause the game to crash (the sound library breaks on certain computers).             *
  **********************************************************************************************************/
 
-boolean ENABLE_SOUND = false;
+boolean ENABLE_SOUND = true;
 
 
 ArrayList<Player> players = new ArrayList();
@@ -48,6 +48,7 @@ SoundFile preGame;
 SoundFile theGrid;
 SoundFile inGame;
 SoundFile postGame;
+SoundFile gameSound;
 SoundFX sfx;
 
 // SOUND [end]
@@ -86,6 +87,7 @@ void setup() {
     preGame = new SoundFile (this, "PreGame.mp3");
     inGame = new SoundFile (this, "InGame.mp3");
     postGame = new SoundFile (this, "PostGame.mp3");
+    gameSound = new SoundFile (this, sfx.chooseGameSound());
     sfx.preGame();
   }
   // SOUND [end]

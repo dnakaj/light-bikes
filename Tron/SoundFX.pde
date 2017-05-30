@@ -8,25 +8,22 @@ import processing.sound.*;
 //For in game sound effects
 class SoundFX {
   
-  SoundFile gameSound;
-  
   //Plays start of game sound
   void preGame () {
     preGame.loop();
   }
   
-  void setGameSound () {
+  String chooseGameSound () {
     if (Math.random() > 0.2) {
-      gameSound = theGrid;
-    } else {
-      gameSound = inGame;
-    }
+      return "TheGrid.mp3";
+    } 
+    
+    return "InGame.mp3";
   }
 
   //Transitions sounds from pre game in to in game, implementation of shiftGain (gain from, gain to, time in milliseconds);
   void moveToGame () {
     preGame.stop();
-    setGameSound();
     readyToPlay.play();
     gameSound.loop();
   }
